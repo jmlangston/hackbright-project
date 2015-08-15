@@ -3,12 +3,13 @@
 # import the Flask class
 from flask import Flask, render_template
 
+from model import Article, Location, User, connect_to_db, db
+
 import json
 import requests
-import pprint
 import os
 
-pp = pprint.PrettyPrinter()
+import pprint
 
 # get API key from secrets.sh
 MY_NYT_KEY = os.environ['MY_NYT_KEY']
@@ -17,27 +18,32 @@ MY_NYT_KEY = os.environ['MY_NYT_KEY']
 # create an instance of the Flask class
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     """Homepage."""
 
-    return render_template("homepage.html")
+    # query database for locations and display them
+
+    locations = Location.query.all()
+
+    return render_template("homepage.html", locations=locations)
 
 
-@app.route('/articles')
-def show_list_articles():
+@app.route('/articles/<int:location_id>')
+def show_list_articles(location_id):
     """Show list of articles about given location."""
 
-    my_location = 'London'
+    # query for articles by location
 
-    test_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json?fq=glocations:(%s)&sort=newest&fl=web_url,snippet,source,multimedia,headline,keywords,pub_date&api-key=%s" % (my_location, MY_NYT_KEY)
+    articles = Article.query.filter_by(location_id=location_id).order_by('pub_date').all()
 
-    resp = requests.get(test_url)
-    resp_json = resp.json()
+    location = Location.query.filter_by(location_id=location_id).all()
 
-    return render_template("articles_list.html", resp_json=resp_json)
+    return render_template("articles_list.html", articles=articles, location=location)
 
 
 # run the local server with this flask application
 if __name__ == '__main__':
+    connect_to_db(app)
     app.run(debug=True)

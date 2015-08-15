@@ -2,6 +2,17 @@
 <html>
 <head>
     <title>Jessica's Project</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet'/>
+
+    <style>
+      body { margin:10; padding:10; }
+      #map { position:absolute; top:0; bottom:0; width:75%; height:75%; }
+    </style>
+
 </head>
 
 <body>
@@ -10,12 +21,43 @@
 
     <h3>Let's find out!</h3>
 
-    <form action="/articles">
-        <label>Show me news about...
-            <input type="radio" name="location" value="newyork">New York
-        </label>
-        <input type="submit">
-    </form>
+    <div id='map'>
+        <script>
+            L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
+            var map = L.mapbox.map('map', 'mapbox.streets').setView([0, 0], 1);
+
+
+        // setView([lat, long], zoom)  <- zoom cannot be a decimal
+
+            L.marker([-34.603684, -58.381559], {
+                icon: L.mapbox.marker.icon({
+                    'marker-size': 'large',
+                    'marker-symbol': 'bus',
+                    'marker-color': '#fa0'
+                })
+            }).addTo(map);
+
+            L.marker([39.904211, 116.407395], {
+                icon: L.mapbox.marker.icon({
+                    'marker-size': 'small',
+                    'marker-symbol': 'car',
+                    'marker-color': '#fa0'
+                })
+            }).addTo(map);
+
+        </script>
+
+    </div>
+
+    <ul>
+        {% for location in locations %}
+            <li>
+                <a href="/articles/{{ location.location_id }}">
+                    {{ location.location_name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 
 </body>
 
