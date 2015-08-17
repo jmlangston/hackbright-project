@@ -147,23 +147,35 @@ def load_articles(articles_list, location):
 
         db.session.add(new_article)
 
-
     db.session.commit()
 
 
-def loop_api_call(loc_name, number_of_articles):
+# def loop_api_call(loc_name, number_of_articles):
+def loop_api_call(loc_name):
     """Given a location, make API calls until there are the desired number_of_articles for
     that location in the database."""
 
+    # find location in database
     loc = Location.query.filter(Location.location_name==loc_name).one()
+    loc_id = loc.location_id
 
-    articles_in_db = Article.query.filter_by(loc.location_id).count()
+    # get current count of articles
+    # before debug the line below was:
+    # articles_in_db = Article.query.filter_by(loc.location_id).count()
+    # articles_in_db = Article.query.filter(Article.location_id==loc_id).count()
     page_number = 0
 
-    while articles_in_db <= number_of_articles:
-        api_call(loc_name, page_number)
-        load_articles(articles_list)
+    # while articles_in_db <= number_of_articles:
+    while page_number < 4:
+        # api_call(loc_name, page_number)
+        articles_list = api_call(loc_name, page_number)
+        load_articles(articles_list, loc_name)
         page_number += 1
+
+
+    articles_in_db = Article.query.filter(Article.location_id==loc_id).count()
+
+    print "articles_in_db = %d" % articles_in_db
 
 
 if __name__ == "__main__":
