@@ -55,16 +55,16 @@ class Location(db.Model):
 
 favorite_articles = db.Table('Favorite_Articles',
     db.Column('fav_art_id', db.Integer, autoincrement=True, primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id')),
-    db.Column('article_id', db.Integer, db.ForeignKey('Articles.article_id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id'), nullable=False),
+    db.Column('article_id', db.Integer, db.ForeignKey('Articles.article_id'), nullable=False)
 )
 
 # A helper/association/reference table to track users' favorite locations.
 
 favorite_locations = db.Table('Favorite_Locations',
     db.Column('fav_loc_id', db.Integer, autoincrement=True, primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id')),
-    db.Column('location_id', db.Integer, db.ForeignKey('Locations.location_id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id'), nullable=False),
+    db.Column('location_id', db.Integer, db.ForeignKey('Locations.location_id'), nullable=False)
 )
 
 
