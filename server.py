@@ -30,7 +30,7 @@ def index():
 
     locations = Location.query.all()
     for location in locations:
-        marker = Marker(location.location_name, location.longitude, location.latitude)
+        marker = Marker(location.location_name, location.longitude, location.latitude, location.location_id)
         marker_geojson = marker.generate_geojson()
         marker_list.append(marker_geojson)
 

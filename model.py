@@ -93,10 +93,13 @@ class Marker():
     In server.py, a GeoJSON FeaturesCollection will be passed to
     homepage.html in order to place markers on the map."""
 
-    def __init__(self, location_name, longitude, latitude):
+    def __init__(self, location_name, longitude, latitude, location_id):
         self.location_name = location_name
         self.longitude = longitude
         self.latitude = latitude
+        self.location_id = location_id
+
+        # self.articles = Article.query.filter_by(location_id=self.location_id).order_by('pub_date').all()
 
     def generate_geojson(self):
 
@@ -108,7 +111,9 @@ class Marker():
                     },
                     "properties": {
                         "title": self.location_name,
-                        "description": "News headlines will go here!"
+                        "description": self.location_id,
+                        "articleUrl": '/articles/' + str(self.location_id),
+                        # "articles": self.articles,
                     }
                 }
 
