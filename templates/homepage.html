@@ -3,61 +3,109 @@
 <head>
     <title>Jessica's Project</title>
 
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
     <script src='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet'/>
 
     <style>
-      body { margin:10; padding:10; }
-      #map { position:absolute; top:0; bottom:0; width:75%; height:75%; }
+      body { margin: 10; padding: 10; }
+      #map { position: absolute; width: 75%; height: 75%; }
     </style>
 
 </head>
 
 <body>
 
-    <h1>What's going on in the world?</h1>
+    <div class="sidebar pad2">
+        <h1>What's going on in the world?</h1>
 
-    <h3>Let's find out!</h3>
+        <h3>Let's find out!</h3>
+        <br>
 
-    <div id='map'>
+    <!-- TO DO: divs, columns, etc. on this page need work (i.e. I need to understand them)! -->
+
+        <ul>
+            {% for location in locations %}
+                <li>
+                <a href="/articles/{{ location.location_id }}">
+                        {{ location.location_name.title() }}
+                        <!-- .title() converts a string to Title Case -->
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    <div>
+    <br>
+    <br>
+
+        <div id="map" class="map pad2">
+        </div>
+
         <script>
+            
             L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
-            var map = L.mapbox.map('map', 'mapbox.streets').setView([0, 0], 1);
+            
+            var map = L.mapbox.map('map', 'mapbox.streets', {
+                scrollWheelZoom: false
+            }).setView([0, 0], 1);
+
+            var tooltipsLayer = L.mapbox.featureLayer().addTo(map);
+
+            // var markers_geojson = 
+
+            tooltipsLayer.setGeoJSON({{ marker_collection | safe }});
+
 
 
         // setView([lat, long], zoom)  <- zoom cannot be a decimal
 
-            L.marker([-34.603684, -58.381559], {
-                icon: L.mapbox.marker.icon({
-                    'marker-size': 'large',
-                    'marker-symbol': 'bus',
-                    'marker-color': '#fa0'
-                })
-            }).addTo(map);
+            // L.marker([40.712784, -74.005941]).addTo(map); // NEW YORK CITY
+            // L.marker([37.774929, -122.419416]).addTo(map); // SAN FRANCISCO
+            // L.marker([41.878114, -87.629798]).addTo(map); // CHICAGO
+            // L.marker([38.907192, -77.036871]).addTo(map); // WASHINGTON (DC)
+            // L.marker([51.507351, -0.127758]).addTo(map); // LONDON
+            // L.marker([48.856614, 2.352222]).addTo(map); // PARIS
+            // L.marker([39.904211, 116.407395]).addTo(map); // BEIJING
+            // L.marker([19.432608, -99.133208]).addTo(map); // MEXICO CITY
+            // L.marker([-34.603684, -58.381559]).addTo(map); // BUENOS AIRES
+            // L.marker([30.044420|31.235712]).addTo(map); // CAIRO
 
-            L.marker([39.904211, 116.407395], {
-                icon: L.mapbox.marker.icon({
-                    'marker-size': 'small',
-                    'marker-symbol': 'car',
-                    'marker-color': '#fa0'
-                })
-            }).addTo(map);
+
+            // geoJSON documentation: http://geojson.org/geojson-spec.html
+
+            // NOTE: geoJSON [LONGITUDE, LATITUDE]
+
+            // var geojson = [
+            //     {
+            //         "type": "Feature",
+            //         "geometry": {
+            //             "type": "Point",
+            //             "coordinates": [-122.419416, 37.774929]
+            //         },
+            //         "properties": {
+            //             "title": "TEST TOOLTIP #1!!!"
+            //         }
+            //     },
+            //     {
+            //         "type": "Feature",
+            //         "geometry": {
+            //             "type": "Point",
+            //             "coordinates": [-74.005941, 40.712784]
+            //         },
+            //         "properties": {
+            //             "title": "TEST TOOLTIP #2!!!"
+            //         }
+            //     }
+            // ]
+
+
+            // var popupContent = "<div id='popup content'><h2>Testing Popup Content</h2><div><p>'<a href='www.google.com'></a></p></div>'"
+
+            // tooltipsLayer.bindPopup(popupContent);
+
 
         </script>
 
     </div>
-
-    <ul>
-        {% for location in locations %}
-            <li>
-                <a href="/articles/{{ location.location_id }}">
-                    {{ location.location_name }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
 
 </body>
 

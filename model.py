@@ -88,6 +88,43 @@ class User(db.Model):
         return "<User user_id=%d username=%s>" % (self.user_id, self.username)
 
 
+class Marker():
+    """Generate GeoJSON feature object from a location object.
+    In server.py, a GeoJSON FeaturesCollection will be passed to
+    homepage.html in order to place markers on the map."""
+
+    def __init__(self, location_name, longitude, latitude):
+        self.location_name = location_name
+        self.longitude = longitude
+        self.latitude = latitude
+
+    def generate_geojson(self):
+
+        return {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [self.longitude, self.latitude]
+                    },
+                    "properties": {
+                        "title": self.location_name,
+                        "description": "News headlines will go here!"
+                    }
+                }
+
+        # return {
+        #             "type": "Feature",
+        #             "geometry": {
+        #                 "type": "Point",
+        #                 "coordinates": [self.longitude, self.latitude]
+        #                 },
+        #             "properties": {
+        #                 "title": self.location_name,
+        #                 "description": "News headlines will go here!"
+        #             }
+        #         }
+
+
 ########################
 
 def connect_to_db(app):

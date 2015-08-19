@@ -1,6 +1,6 @@
-"""Utility file to seed data received from NYT API calls into database."""
+"""Utility file to seed data into database."""
 
-from model import Article, Location, User, connect_to_db, db
+from model import Article, Location, User, Marker, connect_to_db, db
 
 from server import app
 
@@ -16,8 +16,15 @@ MY_NYT_KEY = os.environ['MY_NYT_KEY']
 # how to put API URI into a dictionary:
 # http://docs.python-requests.org/en/latest/user/quickstart/#passing-parameters-in-urls
 
-base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json"
+# REMEMBER:
+# have a function's 'signature' in mind - function name, params, what it returns
 
+# Future functions in this file could include:
+# def load_users():
+# get lat/long for new location (with NYT Geo API, or other)
+
+
+base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json"
 
 url_params = {
         'fq': "glocations.contains:('LOCATION')",   # filtered search query
@@ -27,21 +34,11 @@ url_params = {
         'api-key': MY_NYT_KEY}
 
 
-# FUNCTIONS NEEDED:
-# have function signature in mind - name, params, return
-# make a request to the api and json-ify it
-# parse the response
-# load articles into db
-# load locations into db
-# get lat/long
-# later - load users into db
-
-
 def load_locations(file_name):
     """ Load locations from text file into database.
         Run manually, passing in a file_name. """
 
-        # first file to load: 'seed_data/locations.txt'
+    # first file loaded: 'seed_data/locations.txt'
 
     locations_file = open(file_name)
     locations_by_line = locations_file.read().split('\n')
@@ -52,31 +49,11 @@ def load_locations(file_name):
         db.session.add(new_location)
     db.session.commit()
 
-
-# TO DO LATER: add UNIQUE locations
-
-
-# TO DO LATER: change function names to verb_noun
-
-def api_call(location, page_number):
-    """This function makes requests to the NYT API and receives JSON responses."""
-
-    # update url based on location
-    # is there another way to do this?
-
-    url_params['fq'] = "glocations.contains:(%s)" % (location)
-    url_params['page'] = page_number
-
-    resp = requests.get(base_url, url_params)
-    resp_json = resp.json()
-    articles_list = resp_json['response']['docs']    # type(articles_list) = list
-    return articles_list
+    # TO DO LATER: have this function add UNIQUE locations
+    # use verify_location_in_db()
 
 
-test_list = api_call("NEW YORK CITY", 0)
-
-
-def locations_in_db(location):
+def verify_location_in_db(location):
     """Given a location, returns True or False depending on if
     that location is in the Locations table."""
 
@@ -91,23 +68,37 @@ def locations_in_db(location):
         return False
 
 
+def send_api_request(location, page_number):
+    """This function makes requests to the NYT API and receives JSON responses."""
+
+    # update url based on location
+    # is there another way to do this?
+
+    url_params['fq'] = "glocations.contains:(%s)" % (location)
+    url_params['page'] = page_number
+
+    resp = requests.get(base_url, url_params)
+    resp_json = resp.json()
+    articles_list = resp_json['response']['docs']    # type(articles_list) = list
+    return articles_list
+
+
 def load_articles(articles_list, location):
-    """Load articles_list from API response into database.
-    An article may be in the database more than once if it has multiple glocations."""
+    """Load articles_list obtained from send_api_request() into database."""
 
-    # TO DO LATER - add additional glocations to database
+    # Future possibilities:
+    # An article may be in the db more than once if it has multiple glocations.
+    # If I end up using this function without an indicated location,
+    # have it be able to add new locations to the database
 
-    # list_loc_db = str(db.session.query(Location.location_name).all())
-    # print list_loc_db
-
-    # get location_id for location
     # TO DO: better way to do this?
+    # get location_id for location
     location_obj = Location.query.filter(Location.location_name == location).one()
     location_id = location_obj.location_id
-    print location_id
 
-
-    print "Article list length: %d" % (len(articles_list))
+    # for testing
+    # print location_id
+    # print "Article list length: %d" % (len(articles_list))
 
     for article in articles_list:
         web_url = article['web_url']
@@ -115,33 +106,8 @@ def load_articles(articles_list, location):
         pub_date = article['pub_date']
 
         # for testing
-        print headline, pub_date
-
-        # keywords_list = article['keywords']
-
-        # for testing
-        # print keywords_list
-        print ''
-
-
-        # TO DO: I can actually take out the part below
-        # where I get the glocation from the API response.
-        # In order to have the location in the format I want it
-        # for the database, I need to pass it in to this function.
-
-
-        # for keyword in keywords_list:
-        #     if keyword['name'] == 'glocations':
-        #         if keyword['name'] in list_loc_db:
-        #             print "SUCCESS!"
-        #             glocation = keyword['value']
-                    # location_obj = Location.query.filter(Location.location_name == str(glocation).upper()).one()
-        #             location_id = location_obj.location_id
-        #             new_article = Article(glocation=glocation, web_url=web_url, headline=headline, pub_date=pub_date, location_id=location_id)
-        #             db.session.add(new_article)
-        #             print "new article added about %s !!!!!!" % (glocation)
-        #     else:
-        #         continue
+        # print headline, pub_date
+        # print ''
 
         new_article = Article(glocation=location, web_url=web_url, headline=headline, pub_date=pub_date, location_id=location_id)
 
@@ -150,39 +116,30 @@ def load_articles(articles_list, location):
     db.session.commit()
 
 
-# def loop_api_call(loc_name, number_of_articles):
-def loop_api_call(loc_name):
+# TO DO: have loop_api_request() take in a desired number of articles
+
+def loop_api_requests(loc_name):
     """Given a location, make API calls until there are the desired number_of_articles for
     that location in the database."""
 
-    # find location in database
+    # find location, location_id in database
     loc = Location.query.filter(Location.location_name==loc_name).one()
     loc_id = loc.location_id
 
-    # get current count of articles
-    # before debug the line below was:
-    # articles_in_db = Article.query.filter_by(loc.location_id).count()
-    # articles_in_db = Article.query.filter(Article.location_id==loc_id).count()
     page_number = 0
 
+    # previously written as below but ended up infinitely looping
     # while articles_in_db <= number_of_articles:
     while page_number < 4:
-        # api_call(loc_name, page_number)
-        articles_list = api_call(loc_name, page_number)
+        articles_list = send_api_request(loc_name, page_number)
         load_articles(articles_list, loc_name)
         page_number += 1
 
-
-    articles_in_db = Article.query.filter(Article.location_id==loc_id).count()
-
-    print "articles_in_db = %d" % articles_in_db
+    # for testing
+    # articles_in_db = Article.query.filter(Article.location_id==loc_id).count()
+    # print "articles_in_db = %d" % articles_in_db
 
 
 if __name__ == "__main__":
     connect_to_db(app)
     print "Connected to database for JML project."
-
-    # load_locations('seed_data/locations.txt')
-
-
-# def load_users():

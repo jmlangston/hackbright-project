@@ -3,11 +3,13 @@
 # import the Flask class
 from flask import Flask, render_template
 
-from model import Article, Location, User, connect_to_db, db
+from model import Article, Location, User, Marker, connect_to_db, db
 
 import json
 import requests
 import os
+
+import geojson
 
 import pprint
 
@@ -24,10 +26,17 @@ def index():
     """Homepage."""
 
     # query database for locations and display them
+    marker_list = []
 
     locations = Location.query.all()
+    for location in locations:
+        marker = Marker(location.location_name, location.longitude, location.latitude)
+        marker_geojson = marker.generate_geojson()
+        marker_list.append(marker_geojson)
 
-    return render_template("homepage.html", locations=locations)
+    marker_collection = geojson.FeatureCollection(marker_list)
+
+    return render_template("homepage.html", locations=locations, marker_collection=marker_collection)
 
 
 @app.route('/articles/<int:location_id>')
@@ -38,7 +47,7 @@ def show_list_articles(location_id):
 
     articles = Article.query.filter_by(location_id=location_id).order_by('pub_date').all()
 
-    location = Location.query.filter_by(location_id=location_id).all()
+    location = Location.query.filter_by(location_id=location_id).one()
 
     return render_template("articles_list.html", articles=articles, location=location)
 
