@@ -51,7 +51,9 @@
             var marker = evt.layer
             var feature = marker.feature
 
-            var popupContent = '<h1>' + feature.properties.title + '</h1><a href="' + feature.properties.articleUrl + '">View More Articles</a>'
+            var popupContent = '<h1>' + feature.properties.title + '</h1><a href="' + feature.properties.articles + '"></a><a href="' + feature.properties.articleUrl + '">View More Articles</a>'
+
+            console.log(feature.properties.articles)
 
             marker.bindPopup(popupContent)
         })
