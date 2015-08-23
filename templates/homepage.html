@@ -3,19 +3,23 @@
 <head>
     <title>Jessica's Project</title>
 
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
     <script src='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet'/>
 
     <style>
-      body { margin: 10; padding: 10; }
-      #map { position: absolute; width: 75%; height: 75%; }
+      body { margin: 10; }
+      #map { float: left; width: 70%; height: 500px; }
+      #sidebar { float: right; width: 25%; }
     </style>
 
 </head>
 
 <body>
 
-    <div class="sidebar pad2">
+    <!-- <div class="sidebar pad2"> -->
+    <div id="sidebar">
         <h1>What's going on in the world?</h1>
         <h3>Let's find out!</h3>
 
@@ -33,32 +37,130 @@
         </ul>
     </div>
 
-    <div id="map" class="map pad2">
+    <!-- <div id="map" class="map pad2"> -->
+    <div id="map">
     </div>
 
     <script>
         
+        // per Mapbox mentors, it's okay that this key is not secret
         L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
         
+        // instantiate map
+        // 1st arg is the id ('map')
+        // 2nd arg is the specific map. Right now is a default Mapbox streets map. Later can replace this with map I design in Mapbox Studio.
         var map = L.mapbox.map('map', 'mapbox.streets', {
             scrollWheelZoom: false
-        }).setView([0, 0], 1);
+            }).setView([0, 0], 1);
 
-        var tooltipsLayer = L.mapbox.featureLayer().addTo(map);
+        var popupsLayer = L.mapbox.featureLayer().addTo(map);
 
-        tooltipsLayer.on('layeradd', function(evt) {
-            console.log(evt)
+
+
+
+        popupsLayer.on('layeradd', function(evt) {
+            // console.log(evt)
             var marker = evt.layer
             var feature = marker.feature
 
-            var popupContent = '<h1>' + feature.properties.title + '</h1><a href="' + feature.properties.articles + '"></a><a href="' + feature.properties.articleUrl + '">View More Articles</a>'
+            var popupContent = '<h1>' + feature.properties.title + '</h1><h3>' + feature.properties.articles + '</h3><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
 
-            console.log(feature.properties.articles)
+
+            // I took this out of popupContent and replaced it with a button
+            // <a href="' + feature.properties.articleUrl + '">View More Articles</a>'
+
+            // <a href="' + feature.properties.articles + '"></a>
+
+            // console.log(feature.properties.articles)
 
             marker.bindPopup(popupContent)
         })
 
-        tooltipsLayer.setGeoJSON({{ marker_collection | safe }});
+        popupsLayer.setGeoJSON({{ marker_collection | safe }});
+
+
+        // Map events
+        // https://www.mapbox.com/mapbox.js/api/v2.2.1/l-map-class/#map-events
+        map.on('popupopen', function(evt){
+            console.log("Popup opened!");
+            $('.popup-btn').click(function(){
+                console.log("Button clicked!");
+                c = evt.popup.getContent();
+                // console.log(c);
+                // console.log(typeof c);
+                c_str = c.slice(4,20);
+                c_end = c_str.search("<");
+                city = c_str.slice(0,c_end);
+                console.log("CITY: " + city);
+                geoj = popupsLayer.getGeoJSON();
+                // console.log(g);
+                // console.log(typeof marker_collection);
+                // var marker = evt.popup.getContent();
+                // console.log(marker);
+                // f = popupsLayer.feature;
+                // console.log("FEATURE: " + f);
+
+                console.log(typeof geoj);
+                console.log(geoj);
+                console.log("geoj.features.length: ", geoj.features.length);
+                city_id = 0;
+                for (var i = 0; i < geoj.features.length; i++) {
+                    // console.log(geoj.features[i].properties.title);
+                    if (city == geoj.features[i].properties.title) {
+                        console.log(geoj.features[i].properties.title, geoj.features[i].properties.description);
+                        city_id = geoj.features[i].properties.description;
+                    }
+                }
+                if (city_id != 0) {
+                    window.location = '/articles/' + city_id;
+                } else {
+                    window.location = '/';
+                }
+
+                // var h1 = $('h1')
+                // console.log(evt.popup.getContent().h1);
+            });
+            // var marker = evt.popup.getContent();
+            // console.log(marker);
+        });
+
+            // USE THIS:
+            // marker.on('click', '.popup-btn', showArticles()
+
+
+        // function showArticles(evt):
+        //     $.get('/articles/1', {'marker': marker}, function(results){
+        //         $('#sidebar').html(results);
+        //     })
+
+
+
+        // $(document).ready(function(){
+        //     console.log("HELLO!")
+        //     console.log($('#btn'))
+        //     $('.popup-btn').click(function(){
+        //         console.log("HI!")
+        //         $('#sidebar').hide();
+        //     })
+        // })
+  
+
+        // test jquery. hides and shows sidebar when mouseenter and
+        // mouseleave the map div.
+
+        // $(document).ready(function(){
+        //     $('#map').mouseenter(function(){
+        //         $('#sidebar').hide();
+        //     });
+        //     $('#map').mouseleave(function(){
+        //         $('#sidebar').show();
+        //     })
+        // })
+
+
+        // when you click on a marker, populate the sidebar div with
+        // something other than what's there now.
+
 
 // <a href=/articles/1
 

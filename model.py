@@ -29,7 +29,7 @@ class Article(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Article article_id=[] headline=%s glocation=%s location_id=[]>" % (self.article_id, self.headline, self.glocation)
+        return "<Article article_id=%d headline=%s glocation=%s location_id=[]>" % (self.article_id, self.headline, self.glocation)
 
 
 class Location(db.Model):
@@ -99,7 +99,7 @@ class Marker():
         self.latitude = latitude
         self.location_id = location_id
 
-        self.articles = Article.query.filter_by(location_id=self.location_id).order_by('pub_date').all()
+        self.articles = Article.query.filter_by(location_id=self.location_id).order_by('pub_date').first()
 
     def generate_geojson(self):
 
@@ -113,7 +113,7 @@ class Marker():
                         "title": self.location_name,
                         "description": self.location_id,
                         "articleUrl": '/articles/' + str(self.location_id),
-                        "articles": self.articles,
+                        "articles": self.articles.headline,
                     }
                 }
 
