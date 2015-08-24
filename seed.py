@@ -19,10 +19,7 @@ MY_NYT_KEY = os.environ['MY_NYT_KEY']
 # REMEMBER:
 # have a function's 'signature' in mind - function name, params, what it returns
 
-# Future functions in this file could include:
-# def load_users():
-# get lat/long for new location (with NYT Geo API, or other)
-
+# See "future-features.txt" for post-MVP ideas!
 
 base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json"
 
@@ -49,9 +46,6 @@ def load_locations(file_name):
         db.session.add(new_location)
     db.session.commit()
 
-    # TO DO LATER: have this function add UNIQUE locations
-    # use verify_location_in_db()
-
 
 def verify_location_in_db(location):
     """Given a location, returns True or False depending on if
@@ -71,8 +65,7 @@ def verify_location_in_db(location):
 def send_api_request(location, page_number):
     """This function makes requests to the NYT API and receives JSON responses."""
 
-    # update url based on location
-    # is there another way to do this?
+    # is there another way to update url based on location?
 
     url_params['fq'] = "glocations.contains:(%s)" % (location)
     url_params['page'] = page_number
@@ -86,28 +79,14 @@ def send_api_request(location, page_number):
 def load_articles(articles_list, location):
     """Load articles_list obtained from send_api_request() into database."""
 
-    # Future possibilities:
-    # An article may be in the db more than once if it has multiple glocations.
-    # If I end up using this function without an indicated location,
-    # have it be able to add new locations to the database
-
-    # TO DO: better way to do this?
-    # get location_id for location
+    # to do: is there a better way to get location_id for location?
     location_obj = Location.query.filter(Location.location_name == location).one()
     location_id = location_obj.location_id
-
-    # for testing
-    # print location_id
-    # print "Article list length: %d" % (len(articles_list))
 
     for article in articles_list:
         web_url = article['web_url']
         headline = article['headline']['main']
         pub_date = article['pub_date']
-
-        # for testing
-        # print headline, pub_date
-        # print ''
 
         new_article = Article(glocation=location, web_url=web_url, headline=headline, pub_date=pub_date, location_id=location_id)
 
@@ -116,30 +95,79 @@ def load_articles(articles_list, location):
     db.session.commit()
 
 
-# TO DO: have loop_api_request() take in a desired number of articles
+def loop_api_requests(location_name, num_articles):
+    """Given a location, make API requests until the desired number of articles have been added to the database."""
 
-def loop_api_requests(loc_name):
-    """Given a location, make API calls until there are the desired number_of_articles for
-    that location in the database."""
+    print "location_name: %s" % location_name
 
-    # find location, location_id in database
-    loc = Location.query.filter(Location.location_name==loc_name).one()
-    loc_id = loc.location_id
+    # get location_id for location_name
+    loc = Location.query.filter(Location.location_name == location_name).one()
+    location_id = loc.location_id
+    print "location_id: %d" % location_id
+
+    initial_articles = Article.query.filter(Article.location_id == location_id).count()
+    print "initial_articles: %d" % initial_articles
+
+    # a single API request returns one 'page' with 10 articles
+    pages_to_request = (int(num_articles) / 10) - 1
 
     page_number = 0
 
-    # previously written as below but ended up infinitely looping
-    # while articles_in_db <= number_of_articles:
-    while page_number < 4:
-        articles_list = send_api_request(loc_name, page_number)
-        load_articles(articles_list, loc_name)
+    while page_number <= pages_to_request:
+        articles_list = send_api_request(location_name, page_number)
+        load_articles(articles_list, location_name)
         page_number += 1
 
-    # for testing
-    # articles_in_db = Article.query.filter(Article.location_id==loc_id).count()
-    # print "articles_in_db = %d" % articles_in_db
+    current_articles = Article.query.filter(Article.location_id==location_id).count()
 
+    print "current_articles: %d" % current_articles
+
+
+###########################
 
 if __name__ == "__main__":
     connect_to_db(app)
     print "Connected to database for JML project."
+
+###########################
+
+    # FUTURE FEATURE: add only most recent articles
+    # some code from my initial attempt below
+    # another strategy - instead of using dates, check if headline already in db
+    #
+    # get most recent article date for location
+    # query for articles, sort by date (descending), first item is most recent
+    #
+    # articles_desc_date = Article.query.filter(Article.location_id == location_id).order_by(Article.pub_date.desc()).all()
+    #
+    # most_recent_article_date = articles_desc_date[0].pub_date
+    #
+    # articles_added = 0
+    #
+    # if pub_date < most_recent_article_date:
+    #     print "REACHED MOST RECENT ARTICLE DATE"
+    #     print "Articles added: " + str(articles_added)
+    #     return
+    #
+    # else:
+    # new_article = Article(glocation=location, web_url=web_url, headline=headline, pub_date=pub_date, location_id=location_id)
+    # articles_added += 1
+
+    # def add_recent_articles():
+    #     """Add the most recent articles for each location to the database."""
+
+    #     locations_list = []
+
+    #     locations = Location.query.all()
+    #     for location in locations:
+    #         locations_list.append(location.location_name)
+
+    #     page = 0
+
+    #     for location in locations_list:
+    #         articles_list = send_api_request(location, page)
+    #         load_articles(articles_list, location)
+    #         if len < 10
+    #             return
+    #         else
+    #             continue

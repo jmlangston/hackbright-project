@@ -29,7 +29,7 @@ class Article(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Article article_id=%d headline=%s glocation=%s location_id=[]>" % (self.article_id, self.headline, self.glocation)
+        return "<Article article_id=%d headline=%s glocation=%s location_id=%d>" % (self.article_id, self.headline, self.glocation, self.location_id)
 
 
 class Location(db.Model):

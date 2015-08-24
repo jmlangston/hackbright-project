@@ -2,18 +2,44 @@
 <html>
 <head>
     <title>List of Articles</title>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 </head>
 
 <body>
     <h2>News Articles</h2>
-    <br>
+
     <h3>{{ location.location_name }}</h3>
+
+    <div id="article-list"></div>
+
+    <!-- TO DO: limit article list to # of items -->
 
     <ul>
     {% for article in articles %}
-    <li>{{ article.headline }}<li>
+    <li>
+        <a href={{ article.web_url }}>{{ article.headline }}</a>
+        {{ article.pub_date[0:10] }}
+    </li>
     {% endfor %}
     </ul>
+
+    <script>
+
+    console.log('Testing');
+    console.log(typeof articles)
+
+    // console.log(typeof location);
+
+    // $('#article-list').ready(function(){
+    //     console.log('Testing');
+
+    // })
+
+
+    </script>
+
+
+
 
 </body>
 </html>
