@@ -18,12 +18,9 @@
 
 <body>
 
-    <!-- <div class="sidebar pad2"> -->
     <div id="sidebar">
         <h1>What's going on in the world?</h1>
         <h3>Let's find out!</h3>
-
-    <!-- TO DO: divs, columns, etc. on this page need work (i.e. I need to understand them)! -->
 
         <ul>
             {% for location in locations %}
@@ -37,26 +34,26 @@
         </ul>
     </div>
 
-    <!-- <div id="map" class="map pad2"> -->
     <div id="map">
     </div>
 
     <script>
+
+        // TO DO: organize script into functions?
         
         // per Mapbox mentors, it's okay that this key is not secret
         L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
         
-        // instantiate map
-        // 1st arg is the id ('map')
-        // 2nd arg is the specific map. Right now is a default Mapbox streets map. Later can replace this with map I design in Mapbox Studio.
+        // Instantiate map.  First arg is the html element id ('map').
+        // Second arg is the specific map. Right now is a default Mapbox streets map. Later can replace this with map I design in Mapbox Studio.
         var map = L.mapbox.map('map', 'mapbox.streets', {
             scrollWheelZoom: false
             }).setView([0, 0], 1);
 
+        // TO DO: adjust setView
+        // setView([lat, long], zoom)  <- zoom cannot be a decimal
+
         var popupsLayer = L.mapbox.featureLayer().addTo(map);
-
-
-
 
         popupsLayer.on('layeradd', function(evt) {
             // console.log(evt)
@@ -68,17 +65,13 @@
             // I took this out of popupContent and replaced it with a button
             // <a href="' + feature.properties.articleUrl + '">View More Articles</a>'
 
-            // <a href="' + feature.properties.articles + '"></a>
-
-            // console.log(feature.properties.articles)
-
             marker.bindPopup(popupContent)
         })
 
         popupsLayer.setGeoJSON({{ marker_collection | safe }});
 
 
-        // Map events
+        // Map events documentation
         // https://www.mapbox.com/mapbox.js/api/v2.2.1/l-map-class/#map-events
         map.on('popupopen', function(evt){
             console.log("Popup opened!");
@@ -110,17 +103,17 @@
                         city_id = geoj.features[i].properties.description;
                     }
                 }
-                if (city_id != 0) {
-                    window.location = '/articles/' + city_id;
-                } else {
-                    window.location = '/';
-                }
+                // if (city_id != 0) {
+                //     window.location = '/articles/' + city_id;
+                // } else {
+                //     window.location = '/';
+                // }
 
-                // var h1 = $('h1')
-                // console.log(evt.popup.getContent().h1);
+                // AJAX 
+                $.get( "/articles/" + city_id, function(results){
+                    $('#sidebar').html(results);
+                });
             });
-            // var marker = evt.popup.getContent();
-            // console.log(marker);
         });
 
             // USE THIS:
@@ -132,8 +125,7 @@
         //         $('#sidebar').html(results);
         //     })
 
-
-
+        // playing around with jQuery
         // $(document).ready(function(){
         //     console.log("HELLO!")
         //     console.log($('#btn'))
@@ -143,8 +135,7 @@
         //     })
         // })
   
-
-        // test jquery. hides and shows sidebar when mouseenter and
+        // testing jquery. hides and shows sidebar when mouseenter and
         // mouseleave the map div.
 
         // $(document).ready(function(){
@@ -155,16 +146,6 @@
         //         $('#sidebar').show();
         //     })
         // })
-
-
-        // when you click on a marker, populate the sidebar div with
-        // something other than what's there now.
-
-
-// <a href=/articles/1
-
-
-    // setView([lat, long], zoom)  <- zoom cannot be a decimal
 
         // L.marker([40.712784, -74.005941]).addTo(map); // NEW YORK CITY
         // L.marker([37.774929, -122.419416]).addTo(map); // SAN FRANCISCO
@@ -204,12 +185,6 @@
         //         }
         //     }
         // ]
-
-
-        // var popupContent = "<div id='popup content'><h2>Testing Popup Content</h2><div><p>'<a href='www.google.com'></a></p></div>'"
-
-        // tooltipsLayer.bindPopup(popupContent);
-
 
     </script>
 
