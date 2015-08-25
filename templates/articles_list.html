@@ -15,10 +15,12 @@
 
     <!-- TO DO: limit article list to # of items -->
 
+    <!-- <h4>{{ test_headline }}</h4> -->
+
     <ul>
     {% for article in articles %}
     <li>
-        <a href={{ article.web_url }}>{{ article.headline }}</a>
+        <a href={{ article.web_url }}>{{ article.headline | safe }}</a>
         {{ article.pub_date[0:10] }}
     </li>
     {% endfor %}

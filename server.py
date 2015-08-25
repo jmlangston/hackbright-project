@@ -47,6 +47,9 @@ def show_list_articles(location_id):
 
     articles = Article.query.filter_by(location_id=location_id).order_by('pub_date').all()
 
+    # test_headline = articles[0].headline
+    # print test_headline
+
     location = Location.query.filter_by(location_id=location_id).one()
 
     return render_template("articles_list.html", articles=articles, location=location)

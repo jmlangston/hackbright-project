@@ -99,7 +99,7 @@ class Marker():
         self.latitude = latitude
         self.location_id = location_id
 
-        self.articles = Article.query.filter_by(location_id=self.location_id).order_by('pub_date').first()
+        self.articles = Article.query.filter_by(location_id=self.location_id).order_by(Article.pub_date.desc()).all()
 
     def generate_geojson(self):
 
@@ -113,21 +113,14 @@ class Marker():
                         "title": self.location_name,
                         "description": self.location_id,
                         "articleUrl": '/articles/' + str(self.location_id),
-                        "articles": self.articles.headline,
+                        "article_1_headline": self.articles[0].headline,
+                        "article_1_url": self.articles[0].web_url,
+                        "article_2_headline": self.articles[1].headline,
+                        "article_2_url": self.articles[1].web_url,
+                        "article_3_headline": self.articles[2].headline,
+                        "article_3_url": self.articles[2].web_url
                     }
                 }
-
-        # return {
-        #             "type": "Feature",
-        #             "geometry": {
-        #                 "type": "Point",
-        #                 "coordinates": [self.longitude, self.latitude]
-        #                 },
-        #             "properties": {
-        #                 "title": self.location_name,
-        #                 "description": "News headlines will go here!"
-        #             }
-        #         }
 
 
 ########################

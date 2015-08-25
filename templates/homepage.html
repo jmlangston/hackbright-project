@@ -10,8 +10,8 @@
 
     <style>
       body { margin: 10; }
-      #map { float: left; width: 70%; height: 500px; }
-      #sidebar { float: right; width: 25%; }
+      #map { float: left; width: 70%; height: 600px; }
+      #sidebar { float: right; width: 25%; height: 600px; overflow: scroll; }
     </style>
 
 </head>
@@ -48,9 +48,9 @@
         // Second arg is the specific map. Right now is a default Mapbox streets map. Later can replace this with map I design in Mapbox Studio.
         var map = L.mapbox.map('map', 'mapbox.streets', {
             scrollWheelZoom: false
-            }).setView([0, 0], 1);
+            }).setView([20, 0], 2);
 
-        // TO DO: adjust setView
+        // to adjust setView...
         // setView([lat, long], zoom)  <- zoom cannot be a decimal
 
         var popupsLayer = L.mapbox.featureLayer().addTo(map);
@@ -60,7 +60,9 @@
             var marker = evt.layer
             var feature = marker.feature
 
-            var popupContent = '<h1>' + feature.properties.title + '</h1><h3>' + feature.properties.articles + '</h3><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
+            var popupContent = '<h1>' + feature.properties.title + '</h1><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
+
+            console.log(feature.properties.articles)
 
             // I took this out of popupContent and replaced it with a button
             // <a href="' + feature.properties.articleUrl + '">View More Articles</a>'
@@ -70,9 +72,29 @@
 
         popupsLayer.setGeoJSON({{ marker_collection | safe }});
 
+        // geoJSON documentation: http://geojson.org/geojson-spec.html
+        // NOTE: geoJSON [LONGITUDE, LATITUDE]
+
 
         // Map events documentation
         // https://www.mapbox.com/mapbox.js/api/v2.2.1/l-map-class/#map-events
+        
+
+        // WOULD THIS WORK?
+        // answer: No, because geoj contains 10 locations...
+        // map.on('popupopen', function(evt){
+        //     $('.popup-btn').click(function(){
+        //         geoj = popupsLayer.getGeoJSON();
+        //         route = geoj.features.properties.articleUrl
+        //         $.get( "/articles/" + city_id, function(results){
+        //             $('#sidebar').html(results);
+        //         });
+        //     });
+        // });
+
+
+        // THIS WORKS!
+
         map.on('popupopen', function(evt){
             console.log("Popup opened!");
             $('.popup-btn').click(function(){
@@ -92,17 +114,17 @@
                 // f = popupsLayer.feature;
                 // console.log("FEATURE: " + f);
 
-                console.log(typeof geoj);
-                console.log(geoj);
+                // console.log("Type of geoj:" + typeof geoj);
+                // console.log("geoj: " geoj);
                 console.log("geoj.features.length: ", geoj.features.length);
                 city_id = 0;
                 for (var i = 0; i < geoj.features.length; i++) {
                     // console.log(geoj.features[i].properties.title);
                     if (city == geoj.features[i].properties.title) {
                         console.log(geoj.features[i].properties.title, geoj.features[i].properties.description);
-                        city_id = geoj.features[i].properties.description;
-                    }
-                }
+                        cityUrl = geoj.features[i].properties.articleUrl;
+                    };
+                };
                 // if (city_id != 0) {
                 //     window.location = '/articles/' + city_id;
                 // } else {
@@ -110,81 +132,17 @@
                 // }
 
                 // AJAX 
-                $.get( "/articles/" + city_id, function(results){
+                $.get(cityUrl, function(results){
                     $('#sidebar').html(results);
                 });
             });
         });
 
-            // USE THIS:
-            // marker.on('click', '.popup-btn', showArticles()
-
-
-        // function showArticles(evt):
-        //     $.get('/articles/1', {'marker': marker}, function(results){
-        //         $('#sidebar').html(results);
-        //     })
-
-        // playing around with jQuery
-        // $(document).ready(function(){
-        //     console.log("HELLO!")
-        //     console.log($('#btn'))
-        //     $('.popup-btn').click(function(){
-        //         console.log("HI!")
-        //         $('#sidebar').hide();
-        //     })
-        // })
-  
-        // testing jquery. hides and shows sidebar when mouseenter and
-        // mouseleave the map div.
-
-        // $(document).ready(function(){
-        //     $('#map').mouseenter(function(){
-        //         $('#sidebar').hide();
-        //     });
-        //     $('#map').mouseleave(function(){
-        //         $('#sidebar').show();
-        //     })
-        // })
-
+        // basic - how to add a marker
         // L.marker([40.712784, -74.005941]).addTo(map); // NEW YORK CITY
-        // L.marker([37.774929, -122.419416]).addTo(map); // SAN FRANCISCO
-        // L.marker([41.878114, -87.629798]).addTo(map); // CHICAGO
-        // L.marker([38.907192, -77.036871]).addTo(map); // WASHINGTON (DC)
-        // L.marker([51.507351, -0.127758]).addTo(map); // LONDON
-        // L.marker([48.856614, 2.352222]).addTo(map); // PARIS
-        // L.marker([39.904211, 116.407395]).addTo(map); // BEIJING
-        // L.marker([19.432608, -99.133208]).addTo(map); // MEXICO CITY
-        // L.marker([-34.603684, -58.381559]).addTo(map); // BUENOS AIRES
-        // L.marker([30.044420|31.235712]).addTo(map); // CAIRO
 
 
-        // geoJSON documentation: http://geojson.org/geojson-spec.html
 
-        // NOTE: geoJSON [LONGITUDE, LATITUDE]
-
-        // var geojson = [
-        //     {
-        //         "type": "Feature",
-        //         "geometry": {
-        //             "type": "Point",
-        //             "coordinates": [-122.419416, 37.774929]
-        //         },
-        //         "properties": {
-        //             "title": "TEST TOOLTIP #1!!!"
-        //         }
-        //     },
-        //     {
-        //         "type": "Feature",
-        //         "geometry": {
-        //             "type": "Point",
-        //             "coordinates": [-74.005941, 40.712784]
-        //         },
-        //         "properties": {
-        //             "title": "TEST TOOLTIP #2!!!"
-        //         }
-        //     }
-        // ]
 
     </script>
 
