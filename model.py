@@ -115,10 +115,13 @@ class Marker():
                         "articleUrl": '/articles/' + str(self.location_id),
                         "article_1_headline": self.articles[0].headline,
                         "article_1_url": self.articles[0].web_url,
+                        "article_1_date": self.articles[0].pub_date[0:10],
                         "article_2_headline": self.articles[1].headline,
                         "article_2_url": self.articles[1].web_url,
+                        "article_2_date": self.articles[1].pub_date[0:10],
                         "article_3_headline": self.articles[2].headline,
-                        "article_3_url": self.articles[2].web_url
+                        "article_3_url": self.articles[2].web_url,
+                        "article_3_date": self.articles[2].pub_date[0:10]
                     }
                 }
 

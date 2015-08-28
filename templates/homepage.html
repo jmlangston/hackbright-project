@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Jessica's Project</title>
+    <title>WorldWise</title>
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
@@ -19,27 +19,41 @@
 <body>
 
     <div id="sidebar">
-        <h1>What's going on in the world?</h1>
-        <h3>Let's find out!</h3>
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="alert">{{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
 
-        <ul>
-            {% for location in locations %}
-                <li>
-                <a href="/articles/{{ location.location_id }}">
-                        {{ location.location_name.title() }}
-                        <!-- .title() converts a string to Title Case -->
+
+
+        <!-- <h1>What's going on in the world?</h1> -->
+        <!-- <h3>Let's find out!</h3> -->
+
+        <!-- <ul> -->
+            <!-- {% for location in locations %} -->
+                <!-- <li> -->
+                <!-- <a href="/articles/{{ location.location_id }}"> -->
+                        <!-- {{ location.location_name.title() }} -->
+                        <!-- .title() converts a string to Title Case
                     </a>
                 </li>
             {% endfor %}
         </ul>
-    </div>
+ -->    </div>
 
     <div id="map">
     </div>
 
+    <!-- // <script src="sidebar.js"></script> -->
+
     <script>
 
-        // TO DO: organize script into functions?
+        var sidebar = document.getElementById("sidebar");
+        sidebar.innerText = "Hello, World!";
+
+        // TO DO: how to organize script into functions?
         
         // per Mapbox mentors, it's okay that this key is not secret
         L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
@@ -60,7 +74,8 @@
             var marker = evt.layer
             var feature = marker.feature
 
-            var popupContent = '<h1>' + feature.properties.title + '</h1><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
+            var popupContent = 
+                '<h1>' + feature.properties.title + '</h1><ul><li><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a> ' + feature.properties.article_1_date + '</li><li><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a> ' + feature.properties.article_2_date + '</li><li><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a> ' + feature.properties.article_3_date + '</li></ul><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
 
             console.log(feature.properties.articles)
 

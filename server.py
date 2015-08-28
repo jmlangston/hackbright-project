@@ -1,7 +1,7 @@
 """Server for Jessica's Hackbright project."""
 
 # import the Flask class
-from flask import Flask, render_template
+from flask import Flask, render_template, request, session, flash, redirect
 
 from model import Article, Location, User, Marker, connect_to_db, db
 
@@ -13,17 +13,77 @@ import geojson
 
 import pprint
 
-# get API key from secrets.sh
-MY_NYT_KEY = os.environ['MY_NYT_KEY']
-
-
 # create an instance of the Flask class
 app = Flask(__name__)
 
+# get API key from secrets.sh
+MY_NYT_KEY = os.environ['MY_NYT_KEY']
+
+app.secret_key = "ABC"
+
 
 @app.route('/')
-def index():
-    """Homepage."""
+def welcome():
+
+    return render_template("welcome.html")
+
+
+@app.route('/register', methods=["POST"])
+def register_user():
+    """Handles submission of user registration form. Adds user to session. Redirect to main map page with flash message."""
+
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    # add new user to database
+    new_user = User(username=username, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    # get id of new user from database and put into session
+    user = User.query.filter_by(username=username).first()
+
+    if 'login' not in session:
+        session['login'] = user.user_id
+
+    #TO DO: FLASH NOT FLASHING
+    flash("Thank you for registering!")
+
+    return redirect("/newsmap")
+
+
+@app.route('/login', methods=["POST"])
+def site_login():
+    """Handles submission of user login form. Adds user to session. Redirect to main map page with flash message."""
+
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    user = User.query.filter_by(username=username).first()
+
+    if user:
+        if password == user.password:
+            session['login'] = user.user_id
+            flash("Thanks for logging in!")
+            print "SESSION! %r" % session
+            return redirect("/newsmap")
+        else:
+            flash("WRONG PASSWORD!")
+            return redirect("/")
+    else:
+        flash("Please register")
+        return redirect("/")
+
+
+# @app.route('/logout')
+# def site_logout():
+
+
+
+
+@app.route('/newsmap')
+def show_map():
+    """Main map view."""
 
     # query database for locations and display them
     marker_list = []
@@ -45,13 +105,12 @@ def show_list_articles(location_id):
 
     # query for articles by location
 
-    articles = Article.query.filter_by(location_id=location_id).order_by('pub_date').all()
+    articles = Article.query.filter_by(location_id=location_id).order_by(Article.pub_date.desc()).all()
 
     # test_headline = articles[0].headline
     # print test_headline
 
     location = Location.query.filter_by(location_id=location_id).one()
-
     return render_template("articles_list.html", articles=articles, location=location)
 
 

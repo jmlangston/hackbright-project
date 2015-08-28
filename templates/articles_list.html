@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 <head>
-    <!-- <meta charset=utf-8 /> -->
     <title>List of Articles</title>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 </head>
@@ -20,16 +19,17 @@
     <ul>
     {% for article in articles %}
     <li>
-        <a href={{ article.web_url }}>{{ article.headline | safe }}</a>
+        <a href='{{ article.web_url }}'>{{ article.headline | safe }}</a>
         {{ article.pub_date[0:10] }}
     </li>
+
     {% endfor %}
     </ul>
 
     <script>
 
-    console.log('Testing');
-    console.log(typeof articles)
+    // console.log('Testing');
+    // console.log(typeof articles)
 
     // console.log(typeof location);
 
