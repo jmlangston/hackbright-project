@@ -12,6 +12,8 @@
       body { margin: 10; }
       #map { float: left; width: 70%; height: 600px; }
       #sidebar { float: right; width: 25%; height: 600px; overflow: scroll; }
+      /*#add-location { margin: 10; }*/
+      /*#fave-locations { margin: 10; }*/
     </style>
 
 </head>
@@ -19,6 +21,7 @@
 <body>
 
     <div id="sidebar">
+
     {% with messages = get_flashed_messages() %}
         {% for message in messages %}
             <div class="alert">{{ message }}
@@ -26,11 +29,37 @@
         {% endfor %}
     {% endwith %}
 
+        <div id="login-info">
+            <h3>You are logged in as {{ user.username }}</h3>
+            <button type="button" id="logout-button">Log out</button>
+        </div>
+
+        <h1>Welcome, User!</h1>
+
+        <!-- <div id="add-location"> -->
+            <label>Add a favorite location:
+                <select>
+                    {% for location in locations %}
+                    <option value="{{ location.location_name.lower() }}">{{ location.location_name.title() }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" id="add-fave-location">Add favorite</button>
+            </label>
+        <!-- </div> -->
+
+        <!-- <div id="fave-locations"> -->
+            <label>Your favorite locations:
+                <ul>
+                    {% for location in locations %}
+                    <li>{{ location.location_name }}</li>
+                    {% endfor %}
+                </ul>
+            </label>
+        <!-- <div> -->
 
 
         <!-- <h1>What's going on in the world?</h1> -->
         <!-- <h3>Let's find out!</h3> -->
-
         <!-- <ul> -->
             <!-- {% for location in locations %} -->
                 <!-- <li> -->
@@ -41,17 +70,28 @@
                 </li>
             {% endfor %}
         </ul>
- -->    </div>
+        -->  
+
+    </div> <!-- close sidebar div -->
 
     <div id="map">
     </div>
 
-    <!-- // <script src="sidebar.js"></script> -->
-
     <script>
 
-        var sidebar = document.getElementById("sidebar");
-        sidebar.innerText = "Hello, World!";
+        $('#logout-button').click(function(){
+            window.location = '/logout';
+        });
+
+
+
+
+
+
+        // var username = 
+
+        // var sidebar = document.getElementById("sidebar");
+        // sidebar.innerText = "Hello, World!";
 
         // TO DO: how to organize script into functions?
         

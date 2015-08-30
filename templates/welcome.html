@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <title>Welcome to WorldWise</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="alert">{{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <h1>WorldWise</h1>
+    <h3>Welcome!</h3>
+
+    <h4>Log In</h4>
+    <form action="/login" method="POST">
+        <label>Username: 
+            <input type="text" name="username">
+        </label>
+        <label>Password: 
+            <input type="password" name="password">
+        </label>
+        <input type="submit">
+    </form>
+
+    <h4>Register</h4>
+    <form action="/register" method="POST">
+        <label>Choose a username: 
+            <input type="text" name="username">
+        </label>
+        <label>Set your password: 
+            <input type="password" name="password">
+        </label> 
+        <input type="submit">
+    </form>
+</body>
+</html>

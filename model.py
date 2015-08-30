@@ -43,6 +43,7 @@ class Location(db.Model):
     longitude = db.Column(db.Float, nullable=False)
 
     article = db.relationship('Article', backref=db.backref('Locations'))
+    fav_loc = db.relationship('Fav_Loc', backref=db.backref('Locations'))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
@@ -53,19 +54,34 @@ class Location(db.Model):
 # A helper/association/reference table to track users' favorite articles.
 # https://pythonhosted.org/Flask-SQLAlchemy/models.html#many-to-many-relationships
 
-favorite_articles = db.Table('Favorite_Articles',
-    db.Column('fav_art_id', db.Integer, autoincrement=True, primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id'), nullable=False),
-    db.Column('article_id', db.Integer, db.ForeignKey('Articles.article_id'), nullable=False)
-)
+# favorite_articles = db.Table('Favorite_Articles',
+#     db.Column('fav_art_id', db.Integer, autoincrement=True, primary_key=True),
+#     db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id'), nullable=False),
+#     db.Column('article_id', db.Integer, db.ForeignKey('Articles.article_id'), nullable=False)
+# )
 
 # A helper/association/reference table to track users' favorite locations.
 
-favorite_locations = db.Table('Favorite_Locations',
-    db.Column('fav_loc_id', db.Integer, autoincrement=True, primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id'), nullable=False),
-    db.Column('location_id', db.Integer, db.ForeignKey('Locations.location_id'), nullable=False)
-)
+# favorite_locations = db.Table('Favorite_Locations',
+#     db.Column('fav_loc_id', db.Integer, autoincrement=True, primary_key=True),
+#     db.Column('user_id', db.Integer, db.ForeignKey('Users.user_id'), nullable=False),
+#     db.Column('location_id', db.Integer, db.ForeignKey('Locations.location_id'), nullable=False)
+# )
+
+class Fav_Loc(db.Model):
+    """Users' favorite locations."""
+
+    __tablename__ = "Fav_Loc"
+
+    fav_loc_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    location_id = db.Column(db.Integer, db.ForeignKey('Locations.location_id'), nullable=False)
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<Fav_Loc fav_loc_id=%d, user_id=%d, location_id=%d" % (self.fav_loc_id, self.user_id, self.location_id)
+
 
 
 class User(db.Model):
@@ -77,10 +93,11 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(30), nullable=False)
 
-    # define relationships with Article and Location through the helper tables
-    favorite_articles = db.relationship('Article', secondary=favorite_articles, backref=db.backref('Users'))
-    favorite_locations = db.relationship('Location', secondary=favorite_locations, backref=db.backref('Users'))
+    fav_loc = db.relationship('Fav_Loc', backref=db.backref('Users'))
 
+    # define relationships with Article and Location through the helper tables
+    # favorite_articles = db.relationship('Article', secondary=favorite_articles, backref=db.backref('Users'))
+    # favorite_locations = db.relationship('Location', secondary=favorite_locations, backref=db.backref('Users'))
 
     def __repr__(self):
         """Provide helpful representation when printed."""

@@ -3,7 +3,7 @@
 # import the Flask class
 from flask import Flask, render_template, request, session, flash, redirect
 
-from model import Article, Location, User, Marker, connect_to_db, db
+from model import Article, Location, User, Marker, Fav_Loc, connect_to_db, db
 
 import json
 import requests
@@ -25,6 +25,9 @@ app.secret_key = "ABC"
 @app.route('/')
 def welcome():
 
+    print "SESSION"
+    print session
+
     return render_template("welcome.html")
 
 
@@ -39,14 +42,18 @@ def register_user():
     new_user = User(username=username, password=password)
     db.session.add(new_user)
     db.session.commit()
+    print "NEW USER"
+    print new_user
 
     # get id of new user from database and put into session
     user = User.query.filter_by(username=username).first()
+    print "USER ID: %r" % user.user_id
 
-    if 'login' not in session:
-        session['login'] = user.user_id
+    if 'user_id' not in session:
+        session['user_id'] = user.user_id
 
-    #TO DO: FLASH NOT FLASHING
+    print session
+
     flash("Thank you for registering!")
 
     return redirect("/newsmap")
@@ -63,7 +70,7 @@ def site_login():
 
     if user:
         if password == user.password:
-            session['login'] = user.user_id
+            session['user_id'] = user.user_id
             flash("Thanks for logging in!")
             print "SESSION! %r" % session
             return redirect("/newsmap")
@@ -75,15 +82,37 @@ def site_login():
         return redirect("/")
 
 
-# @app.route('/logout')
-# def site_logout():
+@app.route('/logout')
+def site_logout():
 
+    print "BEFORE"
+    print session
+    del session['user_id']
+    print "AFTER"
+    print session
 
+    flash("YOU ARE NOW LOGGED OUT")
+    return redirect("/")
 
 
 @app.route('/newsmap')
 def show_map():
     """Main map view."""
+
+    print "SESSION"
+    print session
+    print type(session)
+
+    user_id = session.get('user_id')
+    # user_id = session['user_id']
+    print "USER_ID"
+    print user_id
+
+    user = User.query.filter_by(user_id=user_id).first()
+    print user
+
+    # fav_loc = Fav_Loc.query.filter_by(user_id=user_id).all()
+    # db.session.query(Location.location_name)
 
     # query database for locations and display them
     marker_list = []
@@ -96,7 +125,7 @@ def show_map():
 
     marker_collection = geojson.FeatureCollection(marker_list)
 
-    return render_template("homepage.html", locations=locations, marker_collection=marker_collection)
+    return render_template("homepage.html", locations=locations, marker_collection=marker_collection, user=user, fav_loc=fav_loc)
 
 
 @app.route('/articles/<int:location_id>')
