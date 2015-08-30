@@ -111,14 +111,13 @@ def show_map():
     user = User.query.filter_by(user_id=user_id).first()
     print user
 
-    # fav_loc = Fav_Loc.query.filter_by(user_id=user_id).all()
-    # db.session.query(Location.location_name)
+    fav_loc = db.session.query(Location).join(Fav_Loc).filter(Fav_Loc.user_id == user_id).all()
 
     # query database for locations and display them
     marker_list = []
 
     locations = Location.query.all()
-    for location in locations:
+    for location in fav_loc:
         marker = Marker(location.location_name, location.longitude, location.latitude, location.location_id)
         marker_geojson = marker.generate_geojson()
         marker_list.append(marker_geojson)
@@ -126,6 +125,20 @@ def show_map():
     marker_collection = geojson.FeatureCollection(marker_list)
 
     return render_template("homepage.html", locations=locations, marker_collection=marker_collection, user=user, fav_loc=fav_loc)
+
+
+@app.route('/new-location', methods=['POST'])
+def add_new_location():
+    """Add user's new favorite location to map."""
+
+    user_id = session.get('user_id')
+    location_id = request.form.get('location_id')
+
+    new_fav_loc = Fav_Loc(user_id=user_id, location_id=location_id)
+    db.session.add(new_fav_loc)
+    db.session.commit()
+
+    return ""
 
 
 @app.route('/articles/<int:location_id>')
