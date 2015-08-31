@@ -36,9 +36,9 @@
 
         <div id="add-location">
             <label>Add a favorite location:
-                <select>
+                <select id="select-location">
                     {% for location in locations %}
-                    <option value="{{ location.location_id }}">{{ location.location_name.title() }}</option>
+                    <option value="{{ location.location_id }}" data-name="{{ location.location_name }}">{{ location.location_name.title() }}</option>
                     {% endfor %}
                 </select>
                 <button type="button" id="add-fav-location">Add favorite</button>
@@ -69,22 +69,20 @@
         });
 
         $('#add-fav-location').click(function(){
-            var location_name = $('#add-fav-location').siblings()[0].textContent;
-            console.log(location_name);
             var location_id = $('#add-fav-location').siblings()[0].value;
+            var location_name = $('#select-location option:selected').data('name');
+            $('#locations-list').append(location_name);
             $.post(
                 '/new-location', 
                 {location_id: location_id}, 
                 function(results){
                     var newMarkerLayer = L.mapbox.featureLayer();
                     layerGroup.addLayer(newMarkerLayer);
-                    newMarkerLayer.setGeoJSON(results);
-                    // console.log(results);
+                    newMarkerLayer.setGeoJSON(results.marker_collection);
+                    // console.log(results.location_name);
+                    // var newLocation = $('<li>').html(results.location_name);
+                    // $('#locations-list').append(newLocation);
             });
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode(location_name);
-            node.appendChild(textnode);
-            document.getElementById("locations-list").appendChild(node);
         });
 
 

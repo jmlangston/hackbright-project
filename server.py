@@ -147,7 +147,7 @@ def add_new_location():
     marker_list.append(marker_geojson)
     marker_collection = geojson.FeatureCollection(marker_list)
 
-    return jsonify(marker_collection)
+    return jsonify(location_name=location.location_name, marker_collection=marker_collection)
 
 
 @app.route('/articles/<int:location_id>')
