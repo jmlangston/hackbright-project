@@ -47,7 +47,7 @@
 
         <div id="fav-locations">
             <label>Your favorite locations:
-                <ul>
+                <ul id="locations-list">
                     {% for loc in fav_loc %}
                     <li>{{ loc.location_name }}</li>
                     {% endfor %}
@@ -69,6 +69,8 @@
         });
 
         $('#add-fav-location').click(function(){
+            var location_name = $('#add-fav-location').siblings()[0].textContent;
+            console.log(location_name);
             var location_id = $('#add-fav-location').siblings()[0].value;
             $.post(
                 '/new-location', 
@@ -77,7 +79,12 @@
                     var newMarkerLayer = L.mapbox.featureLayer();
                     layerGroup.addLayer(newMarkerLayer);
                     newMarkerLayer.setGeoJSON(results);
+                    // console.log(results);
             });
+            var node = document.createElement("LI");
+            var textnode = document.createTextNode(location_name);
+            node.appendChild(textnode);
+            document.getElementById("locations-list").appendChild(node);
         });
 
 
