@@ -1,7 +1,7 @@
 """Server for Jessica's Hackbright project."""
 
 # import the Flask class
-from flask import Flask, render_template, request, session, flash, redirect
+from flask import Flask, render_template, request, session, flash, redirect, jsonify
 
 from model import Article, Location, User, Marker, Fav_Loc, connect_to_db, db
 
@@ -134,11 +134,20 @@ def add_new_location():
     user_id = session.get('user_id')
     location_id = request.form.get('location_id')
 
-    new_fav_loc = Fav_Loc(user_id=user_id, location_id=location_id)
-    db.session.add(new_fav_loc)
-    db.session.commit()
+    # new_fav_loc = Fav_Loc(user_id=user_id, location_id=location_id)
+    # db.session.add(new_fav_loc)
+    # db.session.commit()
 
-    return ""
+    location = Location.query.filter(Location.location_id == location_id).first()
+
+    new_marker = Marker(location.location_name, location.longitude, location.latitude, location.location_id)
+
+    marker_list = []
+    marker_geojson = new_marker.generate_geojson()
+    marker_list.append(marker_geojson)
+    marker_collection = geojson.FeatureCollection(marker_list)
+
+    return jsonify(marker_collection)
 
 
 @app.route('/articles/<int:location_id>')

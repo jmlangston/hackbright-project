@@ -12,8 +12,6 @@
       body { margin: 10; }
       #map { float: left; width: 70%; height: 600px; }
       #sidebar { float: right; width: 25%; height: 600px; overflow: scroll; }
-      /*#add-location { margin: 10; }*/
-      /*#fave-locations { margin: 10; }*/
     </style>
 
 </head>
@@ -40,14 +38,14 @@
             <label>Add a favorite location:
                 <select>
                     {% for location in locations %}
-                    <option value="{{ location.location_name.lower() }}">{{ location.location_name.title() }}</option>
+                    <option value="{{ location.location_id }}">{{ location.location_name.title() }}</option>
                     {% endfor %}
                 </select>
-                <button type="button" id="add-fave-location">Add favorite</button>
+                <button type="button" id="add-fav-location">Add favorite</button>
             </label>
         </div>
 
-        <div id="fave-locations">
+        <div id="fav-locations">
             <label>Your favorite locations:
                 <ul>
                     {% for loc in fav_loc %}
@@ -57,25 +55,12 @@
             </label>
         </div>
 
-
-        <!-- <h1>What's going on in the world?</h1> -->
-        <!-- <h3>Let's find out!</h3> -->
-        <!-- <ul> -->
-            <!-- {% for location in locations %} -->
-                <!-- <li> -->
-                <!-- <a href="/articles/{{ location.location_id }}"> -->
-                        <!-- {{ location.location_name.title() }} -->
-                        <!-- .title() converts a string to Title Case
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-        -->  
-
     </div> <!-- close sidebar div -->
+
 
     <div id="map">
     </div>
+
 
     <script>
 
@@ -83,26 +68,19 @@
             window.location = '/logout';
         });
 
-        $('#add-fave-location').click(function(){
-            $.post('/new-location', {location_id: 1});
+        $('#add-fav-location').click(function(){
+            var location_id = $('#add-fav-location').siblings()[0].value;
+            $.post(
+                '/new-location', 
+                {location_id: location_id}, 
+                function(results){
+                    var newMarkerLayer = L.mapbox.featureLayer();
+                    layerGroup.addLayer(newMarkerLayer);
+                    newMarkerLayer.setGeoJSON(results);
+            });
         });
 
 
-
-
-// AJAX 
-                // $.get(cityUrl, function(results){
-                    // $('#sidebar').html(results);
-
-
-
-        // var username = 
-
-        // var sidebar = document.getElementById("sidebar");
-        // sidebar.innerText = "Hello, World!";
-
-        // TO DO: how to organize script into functions?
-        
         // per Mapbox mentors, it's okay that this key is not secret
         L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
         
@@ -112,51 +90,43 @@
             scrollWheelZoom: false
             }).setView([20, 0], 2);
 
-        // to adjust setView...
-        // setView([lat, long], zoom)  <- zoom cannot be a decimal
 
-        var popupsLayer = L.mapbox.featureLayer().addTo(map);
+        // var popupsLayer = L.mapbox.featureLayer().addTo(map);
+        var popupsLayer = L.mapbox.featureLayer();
 
-        popupsLayer.on('layeradd', function(evt) {
-            // console.log(evt)
-            var marker = evt.layer
-            var feature = marker.feature
+        var layerGroup = L.layerGroup().addLayer(popupsLayer).addTo(map);
 
-            var popupContent = 
-                '<h1>' + feature.properties.title + '</h1><ul><li><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a> ' + feature.properties.article_1_date + '</li><li><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a> ' + feature.properties.article_2_date + '</li><li><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a> ' + feature.properties.article_3_date + '</li></ul><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
+        // layerGroup.addLayer(popupsLayer)
 
-            console.log(feature.properties.articles)
-
-            // I took this out of popupContent and replaced it with a button
-            // <a href="' + feature.properties.articleUrl + '">View More Articles</a>'
-
-            marker.bindPopup(popupContent)
-        })
+        popupsLayer.on('layeradd', addMarkers);
 
         popupsLayer.setGeoJSON({{ marker_collection | safe }});
 
-        // geoJSON documentation: http://geojson.org/geojson-spec.html
-        // NOTE: geoJSON [LONGITUDE, LATITUDE]
 
+        function addMarkers(evt) {
+            var marker = evt.layer;
+            var feature = marker.feature;
 
-        // Map events documentation
-        // https://www.mapbox.com/mapbox.js/api/v2.2.1/l-map-class/#map-events
-        
+            var popupContent = '<h1>' + feature.properties.title + '</h1><ul><li><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a> ' + feature.properties.article_1_date + '</li><li><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a> ' + feature.properties.article_2_date + '</li><li><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a> ' + feature.properties.article_3_date + '</li></ul><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
 
-        // WOULD THIS WORK?
-        // answer: No, because geoj contains 10 locations...
-        // map.on('popupopen', function(evt){
-        //     $('.popup-btn').click(function(){
-        //         geoj = popupsLayer.getGeoJSON();
-        //         route = geoj.features.properties.articleUrl
-        //         $.get( "/articles/" + city_id, function(results){
-        //             $('#sidebar').html(results);
-        //         });
-        //     });
-        // });
+            marker.bindPopup(popupContent);
+        };
 
+        // popupsLayer.on('layeradd', function(evt) {
+        //     // console.log(evt)
+        //     var marker = evt.layer
+        //     var feature = marker.feature
 
-        // THIS WORKS!
+        //     var popupContent = 
+        //         '<h1>' + feature.properties.title + '</h1><ul><li><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a> ' + feature.properties.article_1_date + '</li><li><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a> ' + feature.properties.article_2_date + '</li><li><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a> ' + feature.properties.article_3_date + '</li></ul><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
+
+        //     console.log(feature.properties.articles)
+
+        //     marker.bindPopup(popupContent)
+        // })
+
+        // popupsLayer.setGeoJSON({{ marker_collection | safe }});
+
 
         map.on('popupopen', function(evt){
             console.log("Popup opened!");
@@ -200,12 +170,6 @@
                 });
             });
         });
-
-        // basic - how to add a marker
-        // L.marker([40.712784, -74.005941]).addTo(map); // NEW YORK CITY
-
-
-
 
     </script>
 
