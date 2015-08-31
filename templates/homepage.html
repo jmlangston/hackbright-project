@@ -4,6 +4,7 @@
     <title>WorldWise</title>
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 
     <script src='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet'/>
@@ -70,18 +71,19 @@
 
         $('#add-fav-location').click(function(){
             var location_id = $('#add-fav-location').siblings()[0].value;
-            var location_name = $('#select-location option:selected').data('name');
-            $('#locations-list').append(location_name);
+            // var location_name = $('#select-location option:selected').data('name');
+            // $('#locations-list').append(location_name);
             $.post(
                 '/new-location', 
                 {location_id: location_id}, 
                 function(results){
                     var newMarkerLayer = L.mapbox.featureLayer();
+                    newMarkerLayer.on('layeradd', addMarkers);
                     layerGroup.addLayer(newMarkerLayer);
                     newMarkerLayer.setGeoJSON(results.marker_collection);
                     // console.log(results.location_name);
-                    // var newLocation = $('<li>').html(results.location_name);
-                    // $('#locations-list').append(newLocation);
+                    var newLocation = $('<li>').html(results.location_name);
+                    $('#locations-list').append(newLocation);
             });
         });
 
@@ -103,6 +105,7 @@
 
         // layerGroup.addLayer(popupsLayer)
 
+        // layerGroup.on('layeradd', addMarkers);
         popupsLayer.on('layeradd', addMarkers);
 
         popupsLayer.setGeoJSON({{ marker_collection | safe }});
@@ -138,8 +141,6 @@
             $('.popup-btn').click(function(){
                 console.log("Button clicked!");
                 c = evt.popup.getContent();
-                // console.log(c);
-                // console.log(typeof c);
                 c_str = c.slice(4,20);
                 c_end = c_str.search("<");
                 city = c_str.slice(0,c_end);
@@ -174,6 +175,13 @@
                     $('#sidebar').html(results);
                 });
             });
+        });
+
+        map.on('popupclose', function(evt) {
+            console.log("Popup closed!");
+            $.get('/newsmap', function(results){
+                ;
+            })
         });
 
     </script>
