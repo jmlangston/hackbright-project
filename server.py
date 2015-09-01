@@ -165,6 +165,20 @@ def show_list_articles(location_id):
     return render_template("articles_list.html", articles=articles, location=location)
 
 
+# @app.route('/sidebar')
+# def show_sidebar():
+#     """Render sidebar.html template in sidebar div."""
+
+#     user_id = session.get('user_id')
+#     user = User.query.filter_by(user_id=user_id).first()
+
+#     fav_loc = db.session.query(Location).join(Fav_Loc).filter(Fav_Loc.user_id == user_id).all()
+
+#     locations = Location.query.all()
+
+#     return render_template("sidebar.html", user=user, fav_loc=fav_loc, locations=locations)
+
+
 # run the local server with this flask application
 if __name__ == '__main__':
     connect_to_db(app)

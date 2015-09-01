@@ -28,12 +28,16 @@
         {% endfor %}
     {% endwith %}
 
+
         <div id="login-info">
             <h3>You are logged in as {{ user.username }}</h3>
             <button type="button" id="logout-button">Log out</button>
+            <h1>Welcome, User!</h1>
         </div>
 
-        <h1>Welcome, User!</h1>
+        
+        <div id="list-articles">
+        </div>
 
         <div id="add-location">
             <label>Add a favorite location:
@@ -136,6 +140,12 @@
         // popupsLayer.setGeoJSON({{ marker_collection | safe }});
 
 
+        map.on('click', function(evt){
+            $('#add-location').show();
+            $('#fav-locations').show();
+            $('#list-articles').hide();
+        })
+
         map.on('popupopen', function(evt){
             console.log("Popup opened!");
             $('.popup-btn').click(function(){
@@ -172,16 +182,15 @@
 
                 // AJAX 
                 $.get(cityUrl, function(results){
-                    $('#sidebar').html(results);
+                    $('#list-articles').html(results);
+                    $('#add-location').hide();
+                    $('#fav-locations').hide();
                 });
             });
         });
 
         map.on('popupclose', function(evt) {
             console.log("Popup closed!");
-            $.get('/newsmap', function(results){
-                ;
-            })
         });
 
     </script>

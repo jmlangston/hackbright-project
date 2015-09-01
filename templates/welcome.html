@@ -1,10 +1,14 @@
 <!doctype html>
 <html>
 <head>
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+
     <title>Welcome to WorldWise</title>
+
 </head>
 <body>
+
     {% with messages = get_flashed_messages() %}
         {% for message in messages %}
             <div class="alert">{{ message }}
@@ -36,5 +40,6 @@
         </label> 
         <input type="submit">
     </form>
+
 </body>
 </html>
