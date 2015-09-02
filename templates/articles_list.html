@@ -13,16 +13,14 @@
 
 <body>
 
-
-    <h2>News Articles</h2>
-
-    <h3>{{ location.location_name }}</h3>
-
-    <!-- <button type="button">Back</button> -->
+    <div class="font-lato larger-font">  
+        <p>{{ location.location_name }}</p>
+        <p>News Articles</p>
+    </div>
 
     <div id="article-list"></div>
 
-    <div>
+    <div class="font-lato">
     {% for article in articles %}
     <p>
         <a href='{{ article.web_url }}'>{{ article.headline | safe }}</a>

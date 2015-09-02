@@ -28,56 +28,64 @@
     </div>
 
     <div class="col-md-3 sidebar-img">
-    <div id="sidebar" class="container sidebar">
+    
+        <div id="sidebar" class="container sidebar">
 
-    {% with messages = get_flashed_messages() %}
-        {% for message in messages %}
-            <div class="alert">{{ message }}
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="alert font-lato">{{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+
+            <div id="login-info" class="font-lato">
+                You are logged in as {{ user.username }}
+                <span>
+                    <button type="button" class="btn btn-default btn-sm" id="logout-button">Log out
+                    </button>
+                </span>  
+            </div> <!-- close login-info div -->
+
+
+            <div>
+                <h1>Welcome to WorldWise</h1>
             </div>
-        {% endfor %}
-    {% endwith %}
+
+            <div id="list-articles">
+            </div>
 
 
-        <div id="login-info">
-            You are logged in as {{ user.username }}
-            <span>
-                <button type="button" class="btn btn-default" id="logout-button">Log out
-                </button>
-            </span>  
-        </div>
+            <div id="add-location" class="font-lato">
+                <label>Add a favorite location:<br>
+                    <select id="select-location" class="form-control">
+                        {% for location in locations %}
+                        <option value="{{ location.location_id }}" data-name="{{ location.location_name }}">{{ location.location_name.title() }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-default btn-sm" id="add-fav-location">Add favorite</button>
+                </label>
+            </div> <!-- close add-location div -->
 
-        <div>
-            <h1>Welcome to WorldWise</h1>
-        </div>
+            <br><br>
 
-        <div id="list-articles">
-        </div>
-
-        <div id="add-location">
-            <label>Add a favorite location:<br>
-                <select id="select-location" class="form-control">
-                    {% for location in locations %}
-                    <option value="{{ location.location_id }}" data-name="{{ location.location_name }}">{{ location.location_name.title() }}</option>
-                    {% endfor %}
-                </select>
-                <button type="button" class="btn btn-default" id="add-fav-location">Add favorite</button>
-            </label>
-        </div>
-        <br><br>
-        <div id="fav-locations" class="panel panel-default panel-faves">
-            <div class="panel-heading">Your favorite locations:</div>
+            <div id="fav-locations" class="panel panel-default panel-faves">
+                <div class="panel-heading">Your favorite locations:</div>
+                
                 <div class="panel-body" id="locations-list">
                     {% for loc in fav_loc %}
                     <p>{{ loc.location_name.title() }}</p>
                     {% endfor %}
-                </div>
-        </div>
+                </div> <!-- close panel-body div -->
+        
+            </div> <!-- close fav-locations div -->
 
-    </div> <!-- close sidebar div -->
+        </div> <!-- close sidebar div -->
     </div> <!-- close image div (col) --> 
 
 
 </div>  <!-- closing bootstrap row -->
+
 
     <script>
 
@@ -140,7 +148,8 @@
         });
 
         map.on('popupopen', function(evt){ 
-            $('#list-articles').show();       
+            // console.log("Popup opened!");
+            $('#list-articles').show();
             $('.popup-btn').click(function(){
                 c = evt.popup.getContent();
                 c_str = c.slice(25,56);
