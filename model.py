@@ -138,7 +138,8 @@ class Marker():
                         "article_2_date": self.articles[1].pub_date[0:10],
                         "article_3_headline": self.articles[2].headline,
                         "article_3_url": self.articles[2].web_url,
-                        "article_3_date": self.articles[2].pub_date[0:10]
+                        "article_3_date": self.articles[2].pub_date[0:10],
+                        "marker-color": "A70000"
                     }
                 }
 

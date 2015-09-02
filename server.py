@@ -71,14 +71,14 @@ def site_login():
     if user:
         if password == user.password:
             session['user_id'] = user.user_id
-            flash("Thanks for logging in!")
+            flash("Thank you for logging in!")
             print "SESSION! %r" % session
             return redirect("/newsmap")
         else:
-            flash("WRONG PASSWORD!")
+            flash("The password you entered is incorrect. Please try again.")
             return redirect("/")
     else:
-        flash("Please register")
+        flash("Please register.")
         return redirect("/")
 
 
@@ -91,7 +91,7 @@ def site_logout():
     print "AFTER"
     print session
 
-    flash("YOU ARE NOW LOGGED OUT")
+    flash("You are now logged out.")
     return redirect("/")
 
 
@@ -130,9 +130,9 @@ def show_map():
 @app.route('/new-location', methods=['POST'])
 def add_new_location():
     """Add user's new favorite location to map."""
-
+    print request.form
     user_id = session.get('user_id')
-    location_id = request.form.get('location_id')
+    location_id = int(request.form.get('location_id'))
 
     # new_fav_loc = Fav_Loc(user_id=user_id, location_id=location_id)
     # db.session.add(new_fav_loc)
@@ -140,6 +140,7 @@ def add_new_location():
 
     location = Location.query.filter(Location.location_id == location_id).first()
 
+    # if location:
     new_marker = Marker(location.location_name, location.longitude, location.latitude, location.location_id)
 
     marker_list = []

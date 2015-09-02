@@ -4,22 +4,29 @@
     <title>WorldWise</title>
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<!--     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+ -->
 
     <script src='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.1/mapbox.css' rel='stylesheet'/>
 
-    <style>
+    <link href='https://fonts.googleapis.com/css?family=Lobster|Lato:400,700italic,300italic' rel='stylesheet' type='text/css'>
+
+    <link href='/static/my-stylesheet.css' rel='stylesheet' type='text/css'>
+
+<!--     <style>
       body { margin: 10; }
       #map { float: left; width: 70%; height: 600px; }
       #sidebar { float: right; width: 25%; height: 600px; overflow: scroll; }
-    </style>
+    </style> -->
 
 </head>
 
 <body>
 
-    <div id="sidebar">
+    <div id="sidebar" class="container">
 
     {% with messages = get_flashed_messages() %}
         {% for message in messages %}
@@ -30,34 +37,38 @@
 
 
         <div id="login-info">
-            <h3>You are logged in as {{ user.username }}</h3>
-            <button type="button" id="logout-button">Log out</button>
-            <h1>Welcome, User!</h1>
+            You are logged in as {{ user.username }}
+            <span>
+                <button type="button" class="btn btn-default" id="logout-button">Log out
+                </button>
+            </span>  
         </div>
 
-        
+        <div>
+            <h1>Welcome to WorldWise</h1>
+        </div>
+
         <div id="list-articles">
         </div>
 
         <div id="add-location">
-            <label>Add a favorite location:
-                <select id="select-location">
+            <label>Add a favorite location:<br>
+                <select id="select-location" class="form-control">
                     {% for location in locations %}
                     <option value="{{ location.location_id }}" data-name="{{ location.location_name }}">{{ location.location_name.title() }}</option>
                     {% endfor %}
                 </select>
-                <button type="button" id="add-fav-location">Add favorite</button>
+                <button type="button" class="btn btn-default" id="add-fav-location">Add favorite</button>
             </label>
         </div>
-
-        <div id="fav-locations">
-            <label>Your favorite locations:
-                <ul id="locations-list">
+        <br><br>
+        <div id="fav-locations" class="panel panel-default panel-faves">
+            <div class="panel-heading">Your favorite locations:</div>
+                <div class="panel-body" id="locations-list">
                     {% for loc in fav_loc %}
-                    <li>{{ loc.location_name }}</li>
+                    <p>{{ loc.location_name.title() }}</p>
                     {% endfor %}
-                </ul>
-            </label>
+                </div>
         </div>
 
     </div> <!-- close sidebar div -->
@@ -74,7 +85,8 @@
         });
 
         $('#add-fav-location').click(function(){
-            var location_id = $('#add-fav-location').siblings()[0].value;
+            // var location_id = $('#add-fav-location').siblings()[0].value;
+            var location_id = $('#select-location').val();
             // var location_name = $('#select-location option:selected').data('name');
             // $('#locations-list').append(location_name);
             $.post(
@@ -85,8 +97,7 @@
                     newMarkerLayer.on('layeradd', addMarkers);
                     layerGroup.addLayer(newMarkerLayer);
                     newMarkerLayer.setGeoJSON(results.marker_collection);
-                    // console.log(results.location_name);
-                    var newLocation = $('<li>').html(results.location_name);
+                    var newLocation = $('<p>').html(results.location_name);
                     $('#locations-list').append(newLocation);
             });
         });
@@ -96,20 +107,16 @@
         L.mapbox.accessToken = 'pk.eyJ1Ijoiam1sYW5nc3RvbiIsImEiOiI1MGFhMGUzZmFjOTJjMmFkYTVjZTQ0MDExYjQ4NzhkYyJ9.xjCipe1mRK_lbjkQruXkvA';
         
         // Instantiate map.  First arg is the html element id ('map').
-        // Second arg is the specific map. Right now is a default Mapbox streets map. Later can replace this with map I design in Mapbox Studio.
-        var map = L.mapbox.map('map', 'mapbox.streets', {
+        // Second arg is the specific map. Right now is a default mapbox.streets map. Later can replace this with map I design in Mapbox Studio.
+        var map = L.mapbox.map('map', 'jmlangston.f9c7d38b', {
             scrollWheelZoom: false
             }).setView([20, 0], 2);
 
 
-        // var popupsLayer = L.mapbox.featureLayer().addTo(map);
         var popupsLayer = L.mapbox.featureLayer();
 
         var layerGroup = L.layerGroup().addLayer(popupsLayer).addTo(map);
 
-        // layerGroup.addLayer(popupsLayer)
-
-        // layerGroup.on('layeradd', addMarkers);
         popupsLayer.on('layeradd', addMarkers);
 
         popupsLayer.setGeoJSON({{ marker_collection | safe }});
@@ -119,68 +126,33 @@
             var marker = evt.layer;
             var feature = marker.feature;
 
-            var popupContent = '<h1>' + feature.properties.title + '</h1><ul><li><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a> ' + feature.properties.article_1_date + '</li><li><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a> ' + feature.properties.article_2_date + '</li><li><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a> ' + feature.properties.article_3_date + '</li></ul><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
+            var popupContent = '<h1 class="popup-header">' + feature.properties.title + '</h1><div class="popup-articles"><p><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a><br>' + feature.properties.article_1_date + '</p><p><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a><br>' + feature.properties.article_2_date + '</p><p><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a><br>' + feature.properties.article_3_date + '</p></div><button type="button" class="popup-btn btn btn-default" id="btn">View More Articles!</button>'
 
             marker.bindPopup(popupContent);
         };
 
-        // popupsLayer.on('layeradd', function(evt) {
-        //     // console.log(evt)
-        //     var marker = evt.layer
-        //     var feature = marker.feature
 
-        //     var popupContent = 
-        //         '<h1>' + feature.properties.title + '</h1><ul><li><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a> ' + feature.properties.article_1_date + '</li><li><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a> ' + feature.properties.article_2_date + '</li><li><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a> ' + feature.properties.article_3_date + '</li></ul><button type="button" class="popup-btn" id="btn">View More Articles!</button>'
-
-        //     console.log(feature.properties.articles)
-
-        //     marker.bindPopup(popupContent)
-        // })
-
-        // popupsLayer.setGeoJSON({{ marker_collection | safe }});
-
-
-        map.on('click', function(evt){
+        map.on('popupclose', function(evt){
             $('#add-location').show();
             $('#fav-locations').show();
             $('#list-articles').hide();
         })
 
         map.on('popupopen', function(evt){
-            console.log("Popup opened!");
             $('.popup-btn').click(function(){
-                console.log("Button clicked!");
                 c = evt.popup.getContent();
                 c_str = c.slice(4,20);
                 c_end = c_str.search("<");
                 city = c_str.slice(0,c_end);
-                console.log("CITY: " + city);
                 geoj = popupsLayer.getGeoJSON();
-                // console.log(g);
-                // console.log(typeof marker_collection);
-                // var marker = evt.popup.getContent();
-                // console.log(marker);
-                // f = popupsLayer.feature;
-                // console.log("FEATURE: " + f);
-
-                // console.log("Type of geoj:" + typeof geoj);
-                // console.log("geoj: " geoj);
-                console.log("geoj.features.length: ", geoj.features.length);
                 city_id = 0;
                 for (var i = 0; i < geoj.features.length; i++) {
-                    // console.log(geoj.features[i].properties.title);
                     if (city == geoj.features[i].properties.title) {
                         console.log(geoj.features[i].properties.title, geoj.features[i].properties.description);
                         cityUrl = geoj.features[i].properties.articleUrl;
                     };
                 };
-                // if (city_id != 0) {
-                //     window.location = '/articles/' + city_id;
-                // } else {
-                //     window.location = '/';
-                // }
 
-                // AJAX 
                 $.get(cityUrl, function(results){
                     $('#list-articles').html(results);
                     $('#add-location').hide();
@@ -194,6 +166,8 @@
         });
 
     </script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 </body>
 
