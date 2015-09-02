@@ -1,0 +1,59 @@
+<!-- <!doctype <html>
+<head>
+    <title></title>
+</head>
+<body> -->
+
+
+<!-- {% extends 'base.html' %}
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <div class="alert">{{ message }}
+        </div>
+    {% endfor %}
+    {% endwith %}
+
+
+
+    <div id="login-info">
+        <h3>You are logged in as {{ user.username }}</h3>
+        <button type="button" id="logout-button">Log out</button>
+    </div>
+
+    <h1>Welcome, User!</h1>
+
+    <div id="add-location">
+        <label>Add a favorite location:
+            <select id="select-location">
+                {% for location in locations %}
+                <option value="{{ location.location_id }}" data-name="{{ location.location_name }}">{{ location.location_name.title() }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" id="add-fav-location">Add favorite</button>
+        </label>
+    </div>
+
+    <div id="fav-locations">
+        <label>Your favorite locations:
+            <ul id="locations-list">
+                {% for loc in fav_loc %}
+                <li>{{ loc.location_name }}</li>
+                {% endfor %}
+            </ul>
+        </label>
+    </div>
+
+    <script>
+
+        $('#logout-button').click(function(){
+            window.location = '/logout';
+        });
+        
+    </script>
+
+{% endblock %} -->
+
+<!-- </body>
+</html> -->

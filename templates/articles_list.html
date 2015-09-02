@@ -21,15 +21,15 @@
 
     <div id="article-list"></div>
 
-    <ul>
+    <div>
     {% for article in articles %}
-    <li>
+    <p>
         <a href='{{ article.web_url }}'>{{ article.headline | safe }}</a>
         {{ article.pub_date[0:10] }}
-    </li>
+    </p>
 
     {% endfor %}
-    </ul>
+    </div>
 
 </body>
 </html>
