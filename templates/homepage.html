@@ -26,7 +26,14 @@
 
 <body>
 
-    <div id="sidebar" class="container">
+<div class="row row-map-page">
+
+
+    <div id="map" class="col-md-9">
+    </div>
+
+    <div class="col-md-3 sidebar-img">
+    <div id="sidebar" class="container sidebar">
 
     {% with messages = get_flashed_messages() %}
         {% for message in messages %}
@@ -72,11 +79,10 @@
         </div>
 
     </div> <!-- close sidebar div -->
+    </div> <!-- close image div (col) --> 
 
 
-    <div id="map">
-    </div>
-
+</div>  <!-- closing bootstrap row -->
 
     <script>
 
@@ -126,7 +132,7 @@
             var marker = evt.layer;
             var feature = marker.feature;
 
-            var popupContent = '<h1 class="popup-header">' + feature.properties.title + '</h1><div class="popup-articles"><p><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a><br>' + feature.properties.article_1_date + '</p><p><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a><br>' + feature.properties.article_2_date + '</p><p><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a><br>' + feature.properties.article_3_date + '</p></div><button type="button" class="popup-btn btn btn-default" id="btn">View More Articles!</button>'
+            var popupContent = '<h1 class="popup-header">' + feature.properties.title + '</h1><div class="popup-articles"><p><a href="' + feature.properties.article_1_url + '">' + feature.properties.article_1_headline + '</a><br>' + feature.properties.article_1_date + '</p><p><a href="' + feature.properties.article_2_url + '">' + feature.properties.article_2_headline + '</a><br>' + feature.properties.article_2_date + '</p><p><a href="' + feature.properties.article_3_url + '">' + feature.properties.article_3_headline + '</a><br>' + feature.properties.article_3_date + '</p></div><button type="button" class="btn btn-default popup-btn" id="btn">View More Articles!</button>'
 
             marker.bindPopup(popupContent);
         };
@@ -141,7 +147,7 @@
         map.on('popupopen', function(evt){
             $('.popup-btn').click(function(){
                 c = evt.popup.getContent();
-                c_str = c.slice(4,20);
+                c_str = c.slice(25,56);
                 c_end = c_str.search("<");
                 city = c_str.slice(0,c_end);
                 geoj = popupsLayer.getGeoJSON();
@@ -150,8 +156,8 @@
                     if (city == geoj.features[i].properties.title) {
                         console.log(geoj.features[i].properties.title, geoj.features[i].properties.description);
                         cityUrl = geoj.features[i].properties.articleUrl;
-                    };
-                };
+                    }
+                }
 
                 $.get(cityUrl, function(results){
                     $('#list-articles').html(results);
