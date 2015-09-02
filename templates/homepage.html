@@ -16,11 +16,6 @@
 
     <link href='/static/my-stylesheet.css' rel='stylesheet' type='text/css'>
 
-<!--     <style>
-      body { margin: 10; }
-      #map { float: left; width: 70%; height: 600px; }
-      #sidebar { float: right; width: 25%; height: 600px; overflow: scroll; }
-    </style> -->
 
 </head>
 
@@ -142,9 +137,10 @@
             $('#add-location').show();
             $('#fav-locations').show();
             $('#list-articles').hide();
-        })
+        });
 
-        map.on('popupopen', function(evt){
+        map.on('popupopen', function(evt){ 
+            $('#list-articles').show();       
             $('.popup-btn').click(function(){
                 c = evt.popup.getContent();
                 c_str = c.slice(25,56);
