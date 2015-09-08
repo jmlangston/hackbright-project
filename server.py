@@ -1,5 +1,7 @@
 """Server for Jessica's Hackbright project."""
 
+# sept. 8 - adding a line to check if git merge and commit worked.
+
 # import the Flask class
 from flask import Flask, render_template, request, session, flash, redirect, jsonify
 
