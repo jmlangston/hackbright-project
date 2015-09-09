@@ -35,6 +35,12 @@ body {
     background-size: cover;
 }
 
+/*.welcome-img {
+    background: url('/static/screen-shot-welcome-page.png');
+    height: 100%;
+    background-size: cover;
+}*/
+
 h1 {
     font-family: 'Lobster', cursive;
 }
