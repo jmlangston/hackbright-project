@@ -1,8 +1,5 @@
 """Server for Jessica's Hackbright project."""
 
-# sept. 8 - adding a line to check if git merge and commit worked.
-
-# import the Flask class
 from flask import Flask, render_template, request, session, flash, redirect, jsonify
 
 from model import Article, Location, User, Marker, Fav_Loc, connect_to_db, db
@@ -26,9 +23,9 @@ app.secret_key = "ABC"
 
 @app.route('/')
 def welcome():
+    """Renders HTML for welcome page."""
 
-    print "SESSION"
-    print session
+    # print session
 
     return render_template("welcome.html")
 
@@ -44,17 +41,15 @@ def register_user():
     new_user = User(username=username, password=password)
     db.session.add(new_user)
     db.session.commit()
-    print "NEW USER"
     print new_user
 
     # get id of new user from database and put into session
     user = User.query.filter_by(username=username).first()
-    print "USER ID: %r" % user.user_id
 
     if 'user_id' not in session:
         session['user_id'] = user.user_id
 
-    print session
+    # print session
 
     flash("Thank you for registering!")
 
@@ -74,7 +69,6 @@ def site_login():
         if password == user.password:
             session['user_id'] = user.user_id
             flash("Thank you for logging in!")
-            print "SESSION! %r" % session
             return redirect("/newsmap")
         else:
             flash("The password you entered is incorrect. Please try again.")
@@ -86,12 +80,9 @@ def site_login():
 
 @app.route('/logout')
 def site_logout():
+    """Removes user from session when they logout. Redirects to welcome page."""
 
-    print "BEFORE"
-    print session
     del session['user_id']
-    print "AFTER"
-    print session
 
     flash("You are now logged out.")
     return redirect("/")
@@ -99,23 +90,16 @@ def site_logout():
 
 @app.route('/newsmap')
 def show_map():
-    """Main map view."""
+    """Renders main map view. Queries database for user's favorite locations and makes geoJSON feature collection to put markers on map."""
 
-    print "SESSION"
-    print session
-    print type(session)
+    # print session
 
     user_id = session.get('user_id')
-    # user_id = session['user_id']
-    print "USER_ID"
-    print user_id
 
     user = User.query.filter_by(user_id=user_id).first()
-    print user
 
     fav_loc = db.session.query(Location).join(Fav_Loc).filter(Fav_Loc.user_id == user_id).all()
 
-    # query database for locations and display them
     marker_list = []
 
     locations = Location.query.all()
@@ -132,17 +116,16 @@ def show_map():
 @app.route('/new-location', methods=['POST'])
 def add_new_location():
     """Add user's new favorite location to map."""
-    print request.form
+    
     user_id = session.get('user_id')
     location_id = int(request.form.get('location_id'))
 
-    # new_fav_loc = Fav_Loc(user_id=user_id, location_id=location_id)
-    # db.session.add(new_fav_loc)
-    # db.session.commit()
+    new_fav_loc = Fav_Loc(user_id=user_id, location_id=location_id)
+    db.session.add(new_fav_loc)
+    db.session.commit()
 
     location = Location.query.filter(Location.location_id == location_id).first()
 
-    # if location:
     new_marker = Marker(location.location_name, location.longitude, location.latitude, location.location_id)
 
     marker_list = []
@@ -158,28 +141,11 @@ def show_list_articles(location_id):
     """Show list of articles about given location."""
 
     # query for articles by location
-
     articles = Article.query.filter_by(location_id=location_id).order_by(Article.pub_date.desc()).all()
 
-    # test_headline = articles[0].headline
-    # print test_headline
-
     location = Location.query.filter_by(location_id=location_id).one()
+
     return render_template("articles_list.html", articles=articles, location=location)
-
-
-# @app.route('/sidebar')
-# def show_sidebar():
-#     """Render sidebar.html template in sidebar div."""
-
-#     user_id = session.get('user_id')
-#     user = User.query.filter_by(user_id=user_id).first()
-
-#     fav_loc = db.session.query(Location).join(Fav_Loc).filter(Fav_Loc.user_id == user_id).all()
-
-#     locations = Location.query.all()
-
-#     return render_template("sidebar.html", user=user, fav_loc=fav_loc, locations=locations)
 
 
 # run the local server with this flask application
