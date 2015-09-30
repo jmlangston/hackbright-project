@@ -1,5 +1,10 @@
-body { 
-    margin-left: 10; 
+.welcome-page-body { 
+    margin-left: 10px; 
+}
+
+.center {
+    margin: auto;
+    width: 40%;
 }
 
 .row-map-page{
@@ -30,16 +35,16 @@ body {
 }
 
 .sidebar-img {
-    background: url('/static/big-ben.jpeg');
+    background: url('/static/img/big-ben.jpeg');
     height: 100%;
     background-size: cover;
 }
 
-/*.welcome-img {
-    background: url('/static/screen-shot-welcome-page.png');
+.welcome-img {
+    background: url('/static/img/welcome-page-image.jpg');
     height: 100%;
     background-size: cover;
-}*/
+}
 
 h1 {
     font-family: 'Lobster', cursive;

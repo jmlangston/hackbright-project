@@ -3,63 +3,68 @@
 <head>
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
-    <link href='https://fonts.googleapis.com/css?family=Lobster|Pacifico' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Lobster|Pacifico" rel="stylesheet" type="text/css">
 
-    <link href='/static/my-stylesheet.css' rel='stylesheet' type='text/css'>
+    <link href="/static/my-stylesheet.css" rel="stylesheet" type="text/css">
 
     <title>Welcome to WorldWise</title>
 
 </head>
-<body>
+<body class="welcome-page-body">
 
     <div class="container welcome-img">
 
-        <div class="row">
-    {% with messages = get_flashed_messages() %}
-        {% for message in messages %}
-            <div class="alert">{{ message }}
+        <div class="row"> <!-- the row class comes from bootstrap and keeps all of the elements on top of one another -->
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+            <div class="alert center">{{ message }}
             </div>
-        {% endfor %}
-    {% endwith %}
+            {% endfor %}
+        {% endwith %}
 
-    <div>
+            <!-- <div class="col-md-offset-4"> -->
+            <div class="center">
 
-        <h1>WorldWise</h1>
-        <h3>Welcome!</h3>
+                <div class="center">
+                    <h1>WorldWise</h1>
+                </div>
 
-    </div>
+                <div class="center">
+                    <h3>Welcome!</h3>
+                </div>
 
-    <div font-family="Lato">
+                <div font-family="Lato">
 
-    <h4>Log In</h4>
+                <h4>Log In</h4>
 
-    <form action="/login" method="POST">
-        <label> 
-            <input placeholder="Username" class="form-control" type="text" name="username">
-        </label>
-        <label>
-            <input placeholder="Password" class="form-control" type="password" name="password">
-        </label>
-        <input type="submit" class="btn btn-default">
-    </form>
+                <form action="/login" method="POST">
+                    <label> 
+                        <input placeholder="Username" class="form-control" type="text" name="username">
+                    </label>
+                    <label>
+                        <input placeholder="Password" class="form-control" type="password" name="password">
+                    </label>
+                    <input type="submit" class="btn btn-default">
+                </form>
 
-    <h4>Register</h4>
-    <form action="/register" method="POST">
-        <label> 
-            <input placeholder="Choose a username" type="text" name="username" class="form-control">
-        </label>
-        <label>
-            <input placeholder="Set your password" type="password" name="password" class="form-control" >
-        </label> 
-        <input class="btn btn-default" type="submit">
-    </form>
-    </div>
+                <h4>Register</h4>
+                <form action="/register" method="POST">
+                    <label> 
+                        <input placeholder="Choose a username" type="text" name="username" class="form-control">
+                    </label>
+                    <label>
+                        <input placeholder="Set your password" type="password" name="password" class="form-control" >
+                    </label> 
+                    <input class="btn btn-default" type="submit">
+                </form>
+                </div> <!-- closes div with font-family="Lato" -->
 
-    </div>
+            </div> <!-- closes column div -->
 
-    </div>
+        </div> <!-- closes div with class="row" -->
+
+    </div> <!-- closes div with class="container welcome-img" -->
 
 </body>
 </html>
