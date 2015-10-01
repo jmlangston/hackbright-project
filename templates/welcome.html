@@ -13,9 +13,9 @@
 </head>
 <body class="welcome-page-body">
 
-    <div class="container welcome-img">
+    <!-- <div class="container welcome-img"> -->
 
-        <div class="row"> <!-- the row class comes from bootstrap and keeps all of the elements on top of one another -->
+        <div class="row welcome-img"> <!-- the row class comes from bootstrap and keeps all of the elements on top of one another -->
         {% with messages = get_flashed_messages() %}
             {% for message in messages %}
             <div class="alert center">{{ message }}
@@ -64,7 +64,7 @@
 
         </div> <!-- closes div with class="row" -->
 
-    </div> <!-- closes div with class="container welcome-img" -->
+    <!-- </div> closes div with class="container welcome-img" -->
 
 </body>
 </html>

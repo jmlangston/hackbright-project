@@ -1,5 +1,10 @@
 .welcome-page-body { 
-    margin-left: 10px; 
+    /*margin-left: 10px;*/
+    /*height: 100%; */
+}
+
+.full-page {
+    height: 100%;
 }
 
 .center {
@@ -43,7 +48,11 @@
 .welcome-img {
     background: url('/static/img/welcome-page-image.jpg');
     height: 100%;
-    background-size: cover;
+    width: 100%;
+    position: absolute;
+    /*margin-left: 10px;*/
+    /*margin-right: 10px;*/
+    /*margin-bottom: 10px;*/
 }
 
 h1 {
