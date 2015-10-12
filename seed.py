@@ -8,18 +8,9 @@ import json
 import requests
 import os
 
-import sys
-
 # get API key from secrets.sh
 MY_NYT_KEY = os.environ['MY_NYT_KEY']
 
-# how to put API URI into a dictionary:
-# http://docs.python-requests.org/en/latest/user/quickstart/#passing-parameters-in-urls
-
-# REMEMBER:
-# have a function's 'signature' in mind - function name, params, what it returns
-
-# See "future-features.txt" for post-MVP ideas!
 
 base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json"
 
@@ -118,7 +109,7 @@ def loop_api_requests(location_name, num_articles):
         load_articles(articles_list, location_name)
         page_number += 1
 
-    current_articles = Article.query.filter(Article.location_id==location_id).count()
+    current_articles = Article.query.filter(Article.location_id == location_id).count()
 
     print "current_articles: %d" % current_articles
 
@@ -128,46 +119,3 @@ def loop_api_requests(location_name, num_articles):
 if __name__ == "__main__":
     connect_to_db(app)
     print "Connected to database for JML project."
-
-###########################
-
-    # FUTURE FEATURE: add only most recent articles
-    # some code from my initial attempt below
-    # another strategy - instead of using dates, check if headline already in db
-    #
-    # get most recent article date for location
-    # query for articles, sort by date (descending), first item is most recent
-    #
-    # articles_desc_date = Article.query.filter(Article.location_id == location_id).order_by(Article.pub_date.desc()).all()
-    #
-    # most_recent_article_date = articles_desc_date[0].pub_date
-    #
-    # articles_added = 0
-    #
-    # if pub_date < most_recent_article_date:
-    #     print "REACHED MOST RECENT ARTICLE DATE"
-    #     print "Articles added: " + str(articles_added)
-    #     return
-    #
-    # else:
-    # new_article = Article(glocation=location, web_url=web_url, headline=headline, pub_date=pub_date, location_id=location_id)
-    # articles_added += 1
-
-    # def add_recent_articles():
-    #     """Add the most recent articles for each location to the database."""
-
-    #     locations_list = []
-
-    #     locations = Location.query.all()
-    #     for location in locations:
-    #         locations_list.append(location.location_name)
-
-    #     page = 0
-
-    #     for location in locations_list:
-    #         articles_list = send_api_request(location, page)
-    #         load_articles(articles_list, location)
-    #         if len < 10
-    #             return
-    #         else
-    #             continue

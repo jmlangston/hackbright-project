@@ -1,4 +1,4 @@
-"""Server for Jessica's Hackbright project."""
+"""Server for WorldWise, Jessica's Hackbright project."""
 
 from flask import Flask, render_template, request, session, flash, redirect, jsonify
 
