@@ -18,23 +18,24 @@
         <div class="row welcome-img"> <!-- the row class comes from bootstrap and keeps all of the elements on top of one another -->
         {% with messages = get_flashed_messages() %}
             {% for message in messages %}
-            <div class="alert center">{{ message }}
+            <div class="alert alert-text center">{{ message }}
             </div>
             {% endfor %}
         {% endwith %}
 
             <!-- <div class="col-md-offset-4"> -->
-            <div class="center">
+            <!-- <div class="center"> -->
+            <div>
 
-                <div class="center">
-                    <h1>WorldWise</h1>
+                <div class="worldwise-welcome">
+                    <p>WorldWise</p>
                 </div>
 
-                <div class="center">
-                    <h3>Welcome!</h3>
+                <div class="welcome-welcome">
+                    <p>Welcome!</p>
                 </div>
 
-                <div font-family="Lato">
+                <div class="center welcome-form" font-family="Lato">
 
                 <h4>Log In</h4>
 

@@ -1,15 +1,25 @@
-.welcome-page-body { 
-    /*margin-left: 10px;*/
-    /*height: 100%; */
+/*.welcome-text {
+    color: black;
+    opacity: 1.0;
 }
+
+.test-text{
+    color: #7C0000;
+}
+*/
+
+/*.welcome-page-body { 
+    margin-left: 10px;
+    height: 100%; 
+}*/
 
 .full-page {
     height: 100%;
 }
 
 .center {
-    margin: auto;
-    width: 40%;
+    margin-left: 400px;
+    /*width: 50%;*/
 }
 
 .row-map-page{
@@ -50,13 +60,46 @@
     height: 100%;
     width: 100%;
     position: absolute;
-    /*margin-left: 10px;*/
-    /*margin-right: 10px;*/
+    /*opacity: 0.5;*/
+    /*margin-top: 10px;*/
+    /*margin-left: 30px;*/
+    /*margin-right: 30px;*/
     /*margin-bottom: 10px;*/
+}
+
+.alert-text {
+    font-family: 'Lato';
+    font-size: 30px;
+    font-weight: bold; 
 }
 
 h1 {
     font-family: 'Lobster', cursive;
+}
+
+h4 {
+    font-family: 'Lato';
+    font-weight: bolder;
+    font-size: 30px;
+}
+
+.worldwise-welcome {
+    font-family: 'Lobster', cursive;
+    font-size: 60px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.welcome-form {
+    margin-top: 40px;
+    font-size: 30px;
+}
+
+.welcome-welcome {
+    font-family: 'Lato';
+    font-size: 35px;
+    text-align: center;
+    font-weight: bold;
 }
 
 /*.leaflet-popup-content {
