@@ -86,15 +86,15 @@ def load_articles(articles_list, location):
     db.session.commit()
 
 
-def loop_api_requests(location_name, num_articles):
+def loop_api_requests(location_id, num_articles):
     """Given a location, make API requests until the desired number of articles have been added to the database."""
 
-    print "location_name: %s" % location_name
+    print "location_id: %d" % location_id
 
     # get location_id for location_name
-    loc = Location.query.filter(Location.location_name == location_name).one()
-    location_id = loc.location_id
-    print "location_id: %d" % location_id
+    loc = Location.query.filter(Location.location_id == location_id).one()
+    location_name = loc.location_name
+    print "location_name: %s" % location_name
 
     initial_articles = Article.query.filter(Article.location_id == location_id).count()
     print "initial_articles: %d" % initial_articles
